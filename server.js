@@ -93,12 +93,6 @@ app.get("/categories/:id/products", (req, res) => {
 }); */
 
 app.post("/admin/products", (req, res) => {
-/*   const body = {
-      req.body.name,
-      req.body.price,
-      req.body.stock,
-      req.body.description,
-  } */
   cn.query(
     "INSERT INTO products (product_name, product_code, listing_price, stock_quantity, product_description) VALUES (? , ? , ? , ? , ?)",
     [
@@ -115,6 +109,89 @@ app.post("/admin/products", (req, res) => {
   );
   res.send("Request nådde fram!");
 });
+
+app.patch("/admin/products", (req, res) => {
+  const productId = req.body.product_id;
+
+  // Validate product_id
+  if (productId === undefined) {
+    return res.status(400).send("product_id is required");
+  }
+  const numericId = Number(productId);
+  if (isNaN(numericId)) {
+    return res.status(400).send("product_id must be a number");
+  }
+
+  // Extract fields to update
+  const updates = {};
+  const fields = ['product_name', 'product_code', 'listing_price', 'stock_quantity', 'product_description'];
+  fields.forEach(field => {
+    if (req.body[field] !== undefined) {
+      updates[field] = req.body[field];
+    }
+  });
+
+  // Check if there are any updates
+  if (Object.keys(updates).length === 0) {
+    return res.status(400).send("No fields provided for update");
+  }
+
+  // Dynamically build the SET clause
+  const setClause = Object.keys(updates).map(field => `${field} = ?`).join(', ');
+  const values = Object.values(updates);
+  values.push(numericId); // Add product_id for the WHERE clause
+
+  // Execute the query
+  cn.query(
+    `UPDATE products SET ${setClause} WHERE product_id = ?`,
+    values,
+    (err, data) => {
+      if (err) return res.status(500).send(err);
+      res.send('Produkt uppdaterad');
+    }
+  );
+  res.send("Request nådde fram!");
+});
+
+// Följande kod kräver att precis ALLA fälten i request body finns med för att uppdatera värdet. Se fixad kod ovan.
+/* app.patch("/admin/products", (req, res) => {
+  const productId = req.body.product_id;
+
+  // Check if product_id exists and is a number
+  if (productId === undefined) {
+    return res.status(400).send("product_id is required");
+  }
+
+  // Convert to number if it's a string, then check if it's a valid number
+  const numericId = Number(productId);
+  if (isNaN(numericId)) {
+    return res.status(400).send("product_id must be a number");
+  }
+
+  cn.query(`
+    UPDATE products 
+    SET product_name = ?, 
+    product_code = ?, 
+    listing_price = ?, 
+    stock_quantity = ?, 
+    product_description = ?
+    WHERE product_id = ? 
+    `,
+    [
+      req.body.product_name,
+      req.body.product_code,
+      req.body.listing_price,
+      req.body.stock_quantity,
+      req.body.product_description,
+      numericId
+    ],
+    (err, data) => {
+      if (err) return res.status(500).send(err);
+      res.send('Produkt uppdaterad');
+    },
+  );
+  res.send("Request nådde fram!");
+}); */
 
 /* Som kund vill jag kunna söka efter produkter så att jag snabbt kan hitta specifika varor */
 app.get("/products", (req, res) => {
