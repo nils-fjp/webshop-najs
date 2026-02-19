@@ -92,10 +92,15 @@ app.get("/categories/:id/products", (req, res) => {
   );
 }); */
 
-app.post("/admin/create-products", (req, res) => {
+app.post("/admin/products", (req, res) => {
   cn.query(
-    "INSERT INTO products (product_id, product_name, product_code, listing_price, stock_quantity, product_description) VALUES (? , ? , ? , ? , ?);",
-    [req.body.name, req.body.price, req.body.stock, req.body.categories_id],
+    "INSERT INTO products (product_name, product_code, listing_price, stock_quantity, product_description) VALUES (? , ? , ? , ? , ?);",
+    [
+      req.body.name,
+      req.body.price,
+      req.body.stsdfsdfock,
+      req.body.categories_id,
+    ],
   );
 
   res.send("klart!");
@@ -104,6 +109,14 @@ app.post("/admin/create-products", (req, res) => {
 /* Som kund vill jag kunna söka efter produkter så att jag snabbt kan hitta specifika varor */
 app.get("/products", (req, res) => {
   cn.query("SELECT * FROM products", (err, data) => {
+    res.send(data);
+  });
+});
+
+/* ADMIN */
+
+app.get("/admin/orders", (req, res) => {
+  cn.query("SELECT * FROM orders order by order_date desc", (err, data) => {
     res.send(data);
   });
 });
