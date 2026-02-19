@@ -93,17 +93,27 @@ app.get("/categories/:id/products", (req, res) => {
 }); */
 
 app.post("/admin/products", (req, res) => {
-  cn.query(
-    "INSERT INTO products (product_name, product_code, listing_price, stock_quantity, product_description) VALUES (? , ? , ? , ? , ?);",
-    [
+/*   const body = {
       req.body.name,
       req.body.price,
-      req.body.stsdfsdfock,
-      req.body.categories_id,
+      req.body.stock,
+      req.body.description,
+  } */
+  cn.query(
+    "INSERT INTO products (product_name, product_code, listing_price, stock_quantity, product_description) VALUES (? , ? , ? , ? , ?)",
+    [
+      req.body.product_name,
+      req.body.product_code,
+      req.body.listing_price,
+      req.body.stock_quantity,
+      req.body.product_description,
     ],
+    (err, data) => {
+      if (err) return res.status(500).send(err);
+      res.send('Produkt insatt');
+    },
   );
-
-  res.send("klart!");
+  res.send("Request nådde fram!");
 });
 
 /* Som kund vill jag kunna söka efter produkter så att jag snabbt kan hitta specifika varor */
