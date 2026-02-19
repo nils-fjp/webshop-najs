@@ -166,8 +166,6 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `orders`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `orders` (
   `order_id` int NOT NULL AUTO_INCREMENT,
   `customer_id` int NOT NULL,
@@ -176,13 +174,21 @@ CREATE TABLE `orders` (
   `total_price` decimal(10,2) DEFAULT NULL,
   `order_date` datetime DEFAULT NULL,
   `order_status` enum('created','paid','shipped','delivered','cancelled') NOT NULL,
-  PRIMARY KEY (`order_id`,`customer_id`),
+
+  PRIMARY KEY (`order_id`),
+
   KEY `fk_orders_customer_idx` (`customer_id`),
   KEY `fk_shipping_address_idx` (`shipping_address_id`),
   KEY `fk_shipping_method_idx` (`shipping_method_id`),
-  CONSTRAINT `fk_orders_customer_id` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`),
-  CONSTRAINT `fk_shipping_address_id` FOREIGN KEY (`shipping_address_id`) REFERENCES `customer_addresses` (`address_id`),
-  CONSTRAINT `fk_shipping_method_id` FOREIGN KEY (`shipping_method_id`) REFERENCES `shipping_methods` (`shipping_methods_id`)
+
+  CONSTRAINT `fk_orders_customer_id`
+    FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`),
+
+  CONSTRAINT `fk_shipping_address_id`
+    FOREIGN KEY (`shipping_address_id`) REFERENCES `customer_addresses` (`address_id`),
+
+  CONSTRAINT `fk_shipping_method_id`
+    FOREIGN KEY (`shipping_method_id`) REFERENCES `shipping_methods` (`shipping_methods_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
