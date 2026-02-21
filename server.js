@@ -157,7 +157,6 @@ app.patch("/admin/products", (req, res) => {
       res.send("Produkt uppdaterad");
     },
   );
-  res.send("Request nådde fram!");
 });
 
 // Följande kod kräver att precis ALLA fälten i request body finns med för att uppdatera värdet. Se fixad kod ovan.
