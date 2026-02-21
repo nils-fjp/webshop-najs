@@ -110,32 +110,6 @@ app.post("/admin/products", (req, res) => {
   );
 });
 
-// Uppdatera en specifik produkt via parameter i URL:en?
-/* 
-app.patch("/admin/products/:id", (req, res) => {
-  const productId = req.body.product_id;
-
-  cn.query(`
-    UPDATE products 
-    ...typ: SET product_name = ?, product_code = ?, listing_price = ?, stock_quantity = ?, product_description = ?
-    WHERE product_id = ?`,
-    [
-      typ...
-      req.body.product_name,
-      req.body.product_code,
-      req.body.listing_price,
-      req.body.stock_quantity,
-      req.body.product_description,
-      productId
-    ],
-    (err, data) => {
-      if (err) return res.status(500).send(err);
-      res.send("Produkt uppdaterad");
-    },
-  );
-}); 
-*/
-
 // Uppdatera en befintlig produkt i databasen. Endast de fält som skickas i body uppdateras.
 app.patch("/admin/products", (req, res) => {
   const productId = req.body.product_id;
@@ -186,6 +160,32 @@ app.patch("/admin/products", (req, res) => {
     },
   );
 });
+
+// Uppdatera en specifik produkt via parameter i URL:en?
+/* 
+app.patch("/admin/products/:id", (req, res) => {
+  const productId = req.body.product_id;
+
+  cn.query(`
+    UPDATE products 
+    ...typ: SET product_name = ?, product_code = ?, listing_price = ?, stock_quantity = ?, product_description = ?
+    WHERE product_id = ?`,
+    [
+      typ...
+      req.body.product_name,
+      req.body.product_code,
+      req.body.listing_price,
+      req.body.stock_quantity,
+      req.body.product_description,
+      productId
+    ],
+    (err, data) => {
+      if (err) return res.status(500).send(err);
+      res.send("Produkt uppdaterad");
+    },
+  );
+}); 
+*/
 
 /* ett program som körs som vänta och väntar på request */
 app.listen(PORT);
