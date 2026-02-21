@@ -104,10 +104,9 @@ app.post("/admin/products", (req, res) => {
     ],
     (err, data) => {
       if (err) return res.status(500).send(err);
-      res.send('Produkt insatt');
+      res.send("Produkt insatt");
     },
   );
-  res.send("Request nådde fram!");
 });
 
 app.patch("/admin/products", (req, res) => {
@@ -124,8 +123,14 @@ app.patch("/admin/products", (req, res) => {
 
   // Extract fields to update
   const updates = {};
-  const fields = ['product_name', 'product_code', 'listing_price', 'stock_quantity', 'product_description'];
-  fields.forEach(field => {
+  const fields = [
+    "product_name",
+    "product_code",
+    "listing_price",
+    "stock_quantity",
+    "product_description",
+  ];
+  fields.forEach((field) => {
     if (req.body[field] !== undefined) {
       updates[field] = req.body[field];
     }
@@ -137,7 +142,9 @@ app.patch("/admin/products", (req, res) => {
   }
 
   // Dynamically build the SET clause
-  const setClause = Object.keys(updates).map(field => `${field} = ?`).join(', ');
+  const setClause = Object.keys(updates)
+    .map((field) => `${field} = ?`)
+    .join(", ");
   const values = Object.values(updates);
   values.push(numericId); // Add product_id for the WHERE clause
 
@@ -147,8 +154,8 @@ app.patch("/admin/products", (req, res) => {
     values,
     (err, data) => {
       if (err) return res.status(500).send(err);
-      res.send('Produkt uppdaterad');
-    }
+      res.send("Produkt uppdaterad");
+    },
   );
   res.send("Request nådde fram!");
 });
