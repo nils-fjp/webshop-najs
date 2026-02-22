@@ -84,9 +84,7 @@ app.post("/customers/:id/orders", (req, res) => {
   const customerId = req.params.id;
   const orderItems = req.body.order_items;
   cn.query(
-    `
-    INSERT INTO orders 
-    (
+    `INSERT INTO orders (
       customer_id, 
       shipping_address_id, 
       shipping_method_id, 
@@ -94,14 +92,13 @@ app.post("/customers/:id/orders", (req, res) => {
       order_date, 
       order_status
     ) 
-    VALUES (?, ?, ?, ?, ?, ?)
-    `,
+    VALUES (?, ?, ?, ?, ?, ?)`,
     [
       customerId,
       req.body.shipping_address_id,
       req.body.shipping_method_id,
       req.body.total_price,
-      new Date().toISOString(),
+      new Date(),
       "created",
     ],
     (err, data) => {
@@ -121,16 +118,12 @@ app.post("/customers/:id/orders", (req, res) => {
             item.product_quantity,
             item.item_price,
           ],
-          (err) => {
+          (err, data) => {
             if (err) return res.status(500).send(err);
           },
         );
       });
-
-      res.status(201).send({
-        message: `Order lagd. InsertId: ${data.insertId}`,
-        insertId: orderId,
-      });
+      res.status(201).send(`Order lagd. InsertId: ${data.insertId}`);
     },
   );
 });
@@ -164,10 +157,7 @@ app.post("/admin/products", (req, res) => {
     ],
     (err, data) => {
       if (err) return res.status(500).send(err);
-      res.status(201).send({
-        message: `Produkt insatt. InsertId: ${data.insertId}`,
-        insertId: data.insertId,
-      });
+      res.status(201).send(`Produkt insatt. InsertId: ${data.insertId}`);
     },
   );
 });
