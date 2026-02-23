@@ -9,17 +9,18 @@
   </head>
   <body>
     <header>
-      <h1>Frontend</h1>
+      <h2>Frontend</h2>
     </header>
     <main>
-      <h3>Produkter laddade från backend:</h3>
+      <input id="endpoint" value="/" />
+      <h3>Data laddad från backend:</h3>
       <script>
         window.addEventListener("load", async () => {
           const container = document.querySelector("tbody");
           container.innerHTML = "<tr><td>Loading...</td></tr>";
-          const data = await fetch("http://localhost:3007/products").then(
-            (res) => res.json(),
-          );
+          const data = await fetch(
+            "http://localhost:3007" + document.getElementById("endpoint").value,
+          ).then((res) => res.json());
           container.innerHTML = "";
           for (let row of data) {
             const rowContainer = document.createElement("tr");
