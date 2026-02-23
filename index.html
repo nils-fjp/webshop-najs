@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="shortcut icon" href="data:/" type="image/x-icon" />
+    <title>frontend</title>
+  </head>
+  <body>
+    <header>
+      <h1>Frontend</h1>
+    </header>
+    <main>
+      <h3>Produkter laddade från backend:</h3>
+      <script>
+        window.addEventListener("load", async () => {
+          const container = document.querySelector("tbody");
+          container.innerHTML = "<tr><td>Loading...</td></tr>";
+          const data = await fetch("http://localhost:3007/products").then(
+            (res) => res.json(),
+          );
+          container.innerHTML = "";
+          for (let row of data) {
+            const rowContainer = document.createElement("tr");
+            for (let colName in row) {
+              const columnContainer = document.createElement("td");
+              columnContainer.textContent = row[colName];
+              rowContainer.appendChild(columnContainer);
+            }
+            container.appendChild(rowContainer);
+          }
+        });
+      </script>
+      <table>
+        <tbody></tbody>
+      </table>
+    </main>
+    <footer>
+      <p>
+        &copy; 2026 Throwaway Frontendprojekt.
+        <b><i>Upphovsrättsbrott beivras.</i></b>
+      </p>
+    </footer>
+  </body>
+</html>
