@@ -13,33 +13,34 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
+// Test route
 app.get("/", (req, res) => {
-  res.send("Hej");
+  res.status(200).send("Hej");
 });
 
-//Hämta alla produkter
+// GET all products
 app.get("/products", (req, res) => {
   cn.query("SELECT * FROM products", (err, data) => {
     if (err) return res.status(500).send(err);
-    res.send(data);
+    res.status(200).send(data);
   });
 });
 
 // Som kund vill jag kunna söka efter produkter så att jag snabbt kan hitta specifika varor
 
-// Hämta en specifik produkt
+// GET a specific product
 app.get("/products/:id", (req, res) => {
   cn.query(
     `SELECT * FROM products WHERE product_id = ?`,
-    req.params.id,
+    [req.params.id],
     (err, data) => {
       if (err) return res.status(500).send(err);
-      res.send(data);
+      res.status(200).send(data);
     },
   );
 });
 
-// Hämta alla produkter i en specifik kategori
+// GET all products in a specific category
 app.get("/categories/:id/products", (req, res) => {
   cn.query(
     `SELECT products.*, categories.category_name FROM product_categories
@@ -49,16 +50,16 @@ app.get("/categories/:id/products", (req, res) => {
     [req.params.id],
     (err, data) => {
       if (err) return res.status(500).send(err);
-      res.send(data);
+      res.status(200).send(data);
     },
   );
 });
 
-// Hämta alla ordrar för en specifik kund
+// GET all orders for a specific customer
 app.get("/customers/:id/orders", (req, res) => {
   cn.query(
     `SELECT 
-      orders.*
+      orders.*,
       products.product_name,
       products.listing_price,
       order_items.product_quantity,
@@ -70,12 +71,12 @@ app.get("/customers/:id/orders", (req, res) => {
     [req.params.id],
     (err, data) => {
       if (err) return res.status(500).send(err);
-      res.send(data);
+      res.status(200).send(data);
     },
   );
 });
 
-// Skapa en ny order för en kund
+// Create new order for a specific customer
 app.post("/customers/:id/orders", (req, res) => {
   cn.query(
     `INSERT INTO orders (
@@ -99,11 +100,13 @@ app.post("/customers/:id/orders", (req, res) => {
       if (err) return res.status(500).send(err);
       req.body.order_items.forEach((item) => {
         cn.query(
-          `
-          INSERT INTO order_items 
-          (order_id, product_id, product_quantity, item_price) 
-          VALUES (?, ?, ?, ?)
-          `,
+          `INSERT INTO order_items (
+            order_id,
+            product_id,
+            product_quantity,
+            item_price
+          ) 
+          VALUES (?, ?, ?, ?)`,
           [
             data.insertId,
             item.product_id,
@@ -115,30 +118,36 @@ app.post("/customers/:id/orders", (req, res) => {
           },
         );
       });
-      res.status(201).send(`Order lagd. InsertId: ${data.insertId}`);
+      res.status(201).send(`Order created. InsertId: ${data.insertId} `);
     },
   );
 });
 
 /* ADMIN */
-// Hämta alla ordrar som admin
+// GET all orders as admin
 app.get("/admin/orders", (req, res) => {
   cn.query("SELECT * FROM orders order by order_date desc", (err, data) => {
-    res.send(data);
+    res.status(200).send(data);
   });
 });
 
-// Hämta alla produkter som admin
+// GET all products as admin
 app.get("/admin/products", (req, res) => {
   cn.query("SELECT * FROM products", (err, data) => {
-    res.send(data);
+    res.status(200).send(data);
   });
 });
 
-// Lägg till en ny produkt i databasen
+// Add new product to database
 app.post("/admin/products", (req, res) => {
   cn.query(
-    `INSERT INTO products (product_name, product_code, listing_price, stock_quantity, product_description) 
+    `INSERT INTO products (
+      product_name,
+      product_code,
+      listing_price,
+      stock_quantity,
+      product_description
+    ) 
     VALUES (? , ? , ? , ? , ?)`,
     [
       req.body.product_name,
@@ -155,19 +164,15 @@ app.post("/admin/products", (req, res) => {
 });
 
 app.put("/admin/products", (req, res) => {
-  const productId = req.body.product_id;
   // Validate product_id
-  if (productId === undefined) {
-    return res.status(400).send("product_id required");
+  if (req.body.product_id === undefined) {
+    return res.status(400).send("product_id required. ");
   }
-  const numericId = Number(productId);
-  if (isNaN(numericId)) {
-    return res.status(400).send("product_id must be a number");
+  if (isNaN(Number(req.body.product_id))) {
+    return res.status(400).send("product_id must be a number. ");
   }
-
   cn.query(
-    `
-    UPDATE products 
+    `UPDATE products 
     SET product_name = ?, product_code = ?, listing_price = ?, stock_quantity = ?, product_description = ? 
     WHERE product_id = ?`,
     [
@@ -176,29 +181,26 @@ app.put("/admin/products", (req, res) => {
       req.body.listing_price,
       req.body.stock_quantity,
       req.body.product_description,
-      numericId,
+      req.body.product_id,
     ],
     (err, data) => {
       if (err) return res.status(500).send(err);
       if (data.affectedRows === 0) {
-        return res.status(404).send("Product not found");
+        return res.status(404).send("Product not found. ");
       }
-      res.send(`Product ${numericId} updated`);
+      res.status(200).send(`Product ${req.body.product_id} updated. `);
     },
   );
 });
 
 // Uppdatera en befintlig produkt i databasen. Endast fälten som skickas i body uppdateras.
 app.patch("/admin/products", (req, res) => {
-  const productId = req.body.product_id;
-
   // Validate product_id
-  if (productId === undefined) {
-    return res.status(400).send("product_id is required");
+  if (req.body.product_id === undefined) {
+    return res.status(400).send("product_id is required. ");
   }
-  const numericId = Number(productId);
-  if (isNaN(numericId)) {
-    return res.status(400).send("product_id must be a number");
+  if (isNaN(Number(req.body.product_id))) {
+    return res.status(400).send("product_id must be a number. ");
   }
 
   // Extract fields to update
@@ -218,7 +220,7 @@ app.patch("/admin/products", (req, res) => {
 
   // Check if there are any updates
   if (Object.keys(updates).length === 0) {
-    return res.status(400).send("No fields provided for update");
+    return res.status(400).send("No fields provided for update. ");
   }
 
   // Dynamically build the SET clause
@@ -226,7 +228,7 @@ app.patch("/admin/products", (req, res) => {
     .map((field) => `${field} = ?`)
     .join(", ");
   const values = Object.values(updates);
-  values.push(numericId); // Add product_id for the WHERE clause
+  values.push(req.body.product_id); // Add product_id for the WHERE clause
 
   // Execute the query
   cn.query(
@@ -234,31 +236,28 @@ app.patch("/admin/products", (req, res) => {
     values,
     (err, data) => {
       if (err) return res.status(500).send(err);
-      res.send(`Product ${numericId} updated`);
+      res.status(200).send(`Product ${req.body.product_id} updated. `);
     },
   );
 });
 
 app.delete("/admin/products", (req, res) => {
-  const productId = req.body.product_id;
   // Validate product_id
-  if (productId === undefined) {
-    return res.status(400).send("product_id is required");
+  if (req.body.product_id === undefined) {
+    return res.status(400).send("product_id is required. ");
   }
-  const numericId = Number(productId);
-  if (isNaN(numericId)) {
-    return res.status(400).send("product_id must be a number");
+  if (isNaN(Number(req.body.product_id))) {
+    return res.status(400).send("product_id must be a number. ");
   }
   cn.query(
-    `DELETE FROM products 
-    WHERE product_id = ?`,
-    [numericId],
+    `DELETE FROM products WHERE product_id = ?`,
+    [req.body.product_id],
     (err, data) => {
       if (err) return res.status(500).send(err);
       if (data.affectedRows === 0) {
-        return res.status(404).send("Product not found");
+        return res.status(404).send("Product not found. ");
       }
-      res.send(`Product ${numericId} deleted`);
+      res.status(200).send(`Product ${req.body.product_id} deleted. `);
     },
   );
 });
@@ -269,26 +268,23 @@ app.get("/admin/orders/:id", (req, res) => {
     [req.params.id],
     (err, data) => {
       if (err) return res.status(500).send(err);
-      res.send(data);
+      res.status(200).send(data);
     },
   );
 });
 
 app.get("/admin/products/:id", (req, res) => {
-  // route params get
   cn.query(
-    `SELECT * FROM products 
-    WHERE product_id = ?`,
+    `SELECT * FROM products WHERE product_id = ?`,
     [req.params.id],
     (err, data) => {
       if (err) return res.status(500).send(err);
-      res.send(data);
+      res.status(200).send(data);
     },
   );
 });
 
 app.post("/admin/products/:id", (req, res) => {
-  // route params post
   cn.query(
     `INSERT INTO products (
       product_id,
@@ -309,7 +305,7 @@ app.post("/admin/products/:id", (req, res) => {
     ],
     (err, data) => {
       if (err) return res.status(500).send(err);
-      res.status(201).send(`Product ${data.insertId} inserted`);
+      res.status(201).send(`Product inserted. insertId: ${data.insertId} `);
     },
   );
 });
@@ -330,16 +326,14 @@ app.put("/admin/products/:id", (req, res) => {
     (err, data) => {
       if (err) return res.status(500).send(err);
       if (data.affectedRows === 0) {
-        return res.status(404).send("Product not found");
+        return res.status(404).send("Product not found. ");
       }
-      res.send(`Product ${req.params.id} updated`);
+      res.status(200).send(`Product ${req.params.id} updated. `);
     },
   );
 });
 
-// Uppdatera en specifik produkt via parameter i URL:en
 app.patch("/admin/products/:id", (req, res) => {
-  const productId = req.params.id;
   const updates = {};
   const fields = [
     "product_name",
@@ -356,7 +350,7 @@ app.patch("/admin/products/:id", (req, res) => {
 
   // Check if there are any updates
   if (Object.keys(updates).length === 0) {
-    return res.status(400).send("No fields provided for update");
+    return res.status(400).send("No fields provided for update. ");
   }
 
   // Dynamically build the SET clause
@@ -364,31 +358,31 @@ app.patch("/admin/products/:id", (req, res) => {
     .map((field) => `${field} = ?`)
     .join(", ");
   const values = Object.values(updates);
-  values.push(productId); // Add product_id for the WHERE clause
+  values.push(req.params.id); // Add product_id for the WHERE clause
 
   cn.query(
-    `UPDATE products 
-    SET ${setClause}
-    WHERE product_id = ?`,
+    `UPDATE products SET ${setClause} WHERE product_id = ?`,
     values,
     (err, data) => {
       if (err) return res.status(500).send(err);
-      res.send(`Product ${productId} updated`);
+      if (data.affectedRows === 0) {
+        return res.status(404).send("Product not found. ");
+      }
+      res.status(200).send(`Product ${req.params.id} updated. `);
     },
   );
 });
 
 app.delete("/admin/products/:id", (req, res) => {
   cn.query(
-    `DELETE FROM products 
-    WHERE product_id = ?`,
+    `DELETE FROM products WHERE product_id = ?`,
     [req.params.id],
     (err, data) => {
       if (err) return res.status(500).send(err);
       if (data.affectedRows === 0) {
-        return res.status(404).send("Product not found");
+        return res.status(404).send("Product not found. ");
       }
-      res.send(`Product ${req.params.id} deleted`);
+      res.status(200).send(`Product ${req.params.id} deleted. `);
     },
   );
 });
