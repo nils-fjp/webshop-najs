@@ -11,9 +11,11 @@
       <h2>Najs frontend</h2>
     </header>
     <main>
-      <label>Port: <input id="port" value="3007" /></label>
-      <label>Endpoint: <input id="endpoint" value="/products" /></label>
-      <button onclick="location.reload()">GET</button>
+      <form action="" method="get">
+        <label>Port: <input id="port" value="3007" /></label>
+        <label>Endpoint: <input id="endpoint" value="/products" /></label>
+        <button id="getBtn">GET</button>
+      </form>
       <h3>Data laddad från backend:</h3>
       <table id="table"></table>
     </main>
@@ -24,7 +26,7 @@
       </p>
     </footer>
     <script>
-      addEventListener("load", async () => {
+      getBtn.addEventListener("click", async () => {
         data = await fetch(
           `http://localhost:${port.value}${endpoint.value}`,
         ).then((res) => res.json());
