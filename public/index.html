@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="data:/" type="image/x-icon" />
+    <title>Najs frontend</title>
+  </head>
+  <body>
+    <header>
+      <h2>Najs frontend</h2>
+    </header>
+    <main>
+      <label>Port: <input id="port" value="3007" /></label>
+      <label>Endpoint: <input id="endpoint" value="/products" /></label>
+      <button id="getBtn">GET</button>
+      <h3>Data laddad från backend:</h3>
+      <table id="table"></table>
+    </main>
+    <footer>
+      <p>
+        &copy; 2026 Najs frontendprojekt.
+        <b><i>Upphovsrättsbrott beivras ej.</i></b>
+      </p>
+    </footer>
+    <script>
+      getBtn.addEventListener("click", async () => {
+        data = await fetch(
+          `http://localhost:${port.value}${endpoint.value}`,
+        ).then((res) => res.json());
+        table.innerHTML =
+          `<tr>${Object.keys(data[0]).map((name) => `<td><b>${name}</b></td>`)
+            .join``}</tr>` +
+          data.map(
+            (row) =>
+              `<tr>${Object.values(row).map((col) => `<td>${col}</td>`)
+                .join``}</tr>`,
+          ).join``;
+      });
+    </script>
+  </body>
+</html>
