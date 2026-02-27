@@ -15,7 +15,19 @@
       <label>Endpoint: <input id="endpoint" value="/products" /></label>
       <button id="getBtn">GET</button>
       <h3>Data laddad från backend:</h3>
+
       <table id="table"></table>
+
+      <form id="searchForm">
+        <label for="search">Sök produkt:</label>
+        <input id="searchField" type="search" name="search" />
+        <!-- <p id="errorMessage" style="color: red; display: none">
+          Inga matchande produkter
+        </p> -->
+        <!-- Används ej -->
+        <button id="searchBtn" type="submit">Sök</button>
+        <!-- Används ej -->
+      </form>
     </main>
     <footer>
       <p>
@@ -37,6 +49,50 @@
                 .join``}</tr>`,
           ).join``;
       });
+
+      searchField.addEventListener("input", async () => {
+        data = await fetch(
+          `http://localhost:${port.value}/products?search=${searchField.value}`,
+        ).then((res) => res.json());
+        table.innerHTML =
+          `<tr>${Object.keys(data[0]).map((name) => `<td><b>${name}</b></td>`)
+            .join``}</tr>` +
+          data.map(
+            (row) =>
+              `<tr>${Object.values(row).map((col) => `<td>${col}</td>`)
+                .join``}</tr>`,
+          ).join``;
+
+        // Används/funkar ej
+        searchBtn.addEventListener("submit", async (event) => {
+          data = await fetch(
+            `http://localhost:${port.value}/products?search=${searchField.value}`,
+          ).then((res) => res.json());
+          table.innerHTML =
+            `<tr>${Object.keys(data[0]).map((name) => `<td><b>${name}</b></td>`)
+              .join``}</tr>` +
+            data.map(
+              (row) =>
+                `<tr>${Object.values(row).map((col) => `<td>${col}</td>`)
+                  .join``}</tr>`,
+            ).join``;
+        }); */
+
+        /* console.log(searchField.value);
+        console.log(port.value);
+        console.log(endpoint.value);
+        console.log(data);
+      });
+
+      /* searchForm.addEventListener("submit", (event) => {
+        if (searchField.value.length < 5) {
+          // IMPORTANT: Stop the form from actually submitting/reloading the page
+          event.preventDefault();
+          alert("Please fix the errors before submitting!");
+        } else {
+          alert("Form submitted successfully!");
+        }
+      }); */
     </script>
   </body>
 </html>
