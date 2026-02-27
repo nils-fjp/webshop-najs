@@ -1,4 +1,4 @@
-const categoryModel = require("../models/category.model");
+const categoryModel = require("../models/categoryModel");
 
 const categoryController = {
   getProductById: async (req, res) => {

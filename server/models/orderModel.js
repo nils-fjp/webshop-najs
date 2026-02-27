@@ -1,12 +1,10 @@
 const cn = require("../config/db");
-const { createForCustomer } = require("../controllers/orderController");
-const { findAll } = require("./productModel");
 
 const orderModel = {
     findOrdersByCustomerId: async (customerId) => {
     return new Promise((resolve, reject) => {
       cn.query(
-        "SELECT orders.*,products.product_name,products.listing_price,order_items.product_quantity,order_items.item_priceFROM ordersJOIN order_items ON orders.order_id = order_items.order_idJOIN products ON products.product_id = order_items.product_idWHERE orders.customer_id = ?",
+        "SELECT orders.*,products.product_name,products.listing_price, order_items.product_quantity, order_items.item_price FROM orders JOIN order_items ON orders.order_id = order_items.order_id JOIN products ON products.product_id = order_items.product_id WHERE orders.customer_id = ?",
         [customerId],
         (err, results) => {
           if (err) return reject(err);
@@ -17,14 +15,14 @@ const orderModel = {
 
 },
 createForCustomer: (customerId, orderData) => {
-    const { shippingAddress_id, shippingMethod_id, totalPrice, order_items } = orderData;
+    const { shipping_address_id, shipping_method_id, total_price, order_items } = orderData;
     return new Promise((resolve, reject) => {
       cn.beginTransaction((err) => {
         if (err) return reject(err);
 
         cn.query(
-            `INSERT INTO orders (customer_id, shippingAddress_id, shippingMethod_id, total_price, order_date, order_status) VALUES (?, ?, ?, ?, ?, ?)`,
-            [customerId, shippingAddress_id, shippingMethod_id, totalPrice, new Date(), "created"],
+            `INSERT INTO orders (customer_id, shipping_address_id, shipping_method_id, total_price, order_date, order_status) VALUES (?, ?, ?, ?, ?, ?)`,
+            [customerId, shipping_address_id, shipping_method_id, total_price, new Date(), "created"],
             (err, result) => {
                 if (err) {
                     return cn.rollback(() => reject(err));
@@ -70,6 +68,19 @@ createForCustomer: (customerId, orderData) => {
       );
     });
   },
+findById: (orderId) => {
+    return new Promise((resolve, reject) => {
+      cn.query(
+        `SELECT * FROM orders WHERE order_id = ?`,
+        [orderId],
+        (err, results) => {
+          if (err) return reject(err);
+          resolve(results);
+        }
+      );
+    });
+  },
   
+
 };
 module.exports = orderModel;
