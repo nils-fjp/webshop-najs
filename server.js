@@ -19,12 +19,12 @@ app.get("/", (req, res) => {
 });
 
 // GET all products
-app.get("/products", (req, res) => {
+/* app.get("/products", (req, res) => {
   cn.query("SELECT * FROM products", (err, data) => {
     if (err) return res.status(500).send(err);
     res.status(200).send(data);
   });
-});
+}); */
 
 // Som kund vill jag kunna söka efter produkter så att jag snabbt kan hitta specifika varor
 app.get("/products", (req, res) => {
@@ -268,7 +268,7 @@ app.delete("/admin/products", (req, res) => {
     return res.status(400).send("product_id must be a number. ");
   }
   cn.query(
-    `DELETE FROM products WHERE product_id =` + req.body.id + "'",
+    `DELETE FROM products WHERE product_id = ?`,
     [req.body.product_id],
     (err, data) => {
       if (err) return res.status(500).send(err);
