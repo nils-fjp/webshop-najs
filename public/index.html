@@ -11,9 +11,11 @@
       <h2>Najs frontend</h2>
     </header>
     <main>
-      <label>Port: <input id="port" value="3007" /></label>
-      <label>Endpoint: <input id="endpoint" value="/products" /></label>
-      <button id="getBtn">GET</button>
+      <form>
+        <label>Port:<input id="port" type="number" value="3007" /></label>
+        <label>Endpoint:<input id="endpoint" value="/products" /></label>
+        <button id="getBtn" type="submit">GET</button>
+      </form>
       <h3>Data laddad från backend:</h3>
       <table id="table"></table>
     </main>
