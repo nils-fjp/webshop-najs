@@ -128,7 +128,7 @@ CREATE TABLE `customers` (
 
 LOCK TABLES `customers` WRITE;
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
-INSERT INTO `customers` VALUES (1,'alice.nyberg','alice.nyberg@example.com','Alice','Nyberg','2025-01-04 10:12:00.00000'),(2,'oscar.lind','oscar.lind@example.com','Oscar','Lind','2025-01-06 09:41:00.00000'),(3,'emma.soder','emma.soder@example.com','Emma','Söder','2025-01-09 15:20:00.00000'),(4,'liam.berg','liam.berg@example.com','Liam','Berg','2025-01-12 13:05:00.00000'),(5,'mia.holm','mia.holm@example.com','Mia','Holm','2025-01-15 18:11:00.00000'),(6,'noah.ek','noah.ek@example.com','Noah','Ek','2025-01-18 8:55:37.777777'),(7,'ella.strom','ella.strom@example.com','Ella','Ström', '2999-12-31 23:59:59.999999'),(8,'oliver.dahl', 'oliver.dahl@example.com', 'Oliver', 'Dahl', '2999-12-31 23:59:59.999999'),(9,'ava.sand', 'ava.sand@example.com', 'Ava', 'Sand', '2999-12-31 23:59:59.999999'),(1, 'elias.karlsson', 'elias.karlsson@example.com', 'Elias', 'Karlsson', '2888-12-31 23:58:44.444444'),(1, 'signe.ahl', 'signe.ahl@example.com', 'Signe', 'Ahl', '3666-66-66 66:66:66.666666'),(1, 'william.hed', 'william.hed@example.com', 'William', 'Hed', '3777-77-77 77:77:77.777777'),(1, 'freya.noren', 'freya.noren@example.com', 'Freya', 'Norén', NULL),(1, 'arthur.bjork', NULL, NULL, NULL, NULL),(NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `customers` VALUES (1,'alice.nyberg','alice.nyberg@example.com','Alice','Nyberg','2025-01-04 10:12:00'),(2,'oscar.lind','oscar.lind@example.com','Oscar','Lind','2025-01-06 09:41:00'),(3,'emma.soder','emma.soder@example.com','Emma','Söder','2025-01-09 15:20:00'),(4,'liam.berg','liam.berg@example.com','Liam','Berg','2025-01-12 13:05:00'),(5,'mia.holm','mia.holm@example.com','Mia','Holm','2025-01-15 18:11:00'),(6,'noah.ek','noah.ek@example.com','Noah','Ek','2025-01-18 8:55:37'),(7,'ella.strom','ella.strom@example.com','Ella','Ström', '2999-12-31 23:59:59'),(8,'oliver.dahl', 'oliver.dahl@example.com', 'Oliver', 'Dahl', '2999-12-31 23:59:59'),(9,'ava.sand', 'ava.sand@example.com', 'Ava', 'Sand', '2999-12-31 23:59:59'),(10, 'elias.karlsson', 'elias.karlsson@example.com', 'Elias', 'Karlsson', '2888-12-31 23:58:44'),(11, 'signe.ahl', 'signe.ahl@example.com', 'Signe', 'Ahl', '3666-66-66 66:66:66'),(12, 'william.hed', 'william.hed@example.com', 'William', 'Hed', '3777-77-77 77:77:77'),(13, 'freya.noren', 'freya.noren@example.com', 'Freya', 'Norén', '2025-02-17 19:22:00'),(14, 'arthur.bjork', 'arthur.bjork@example.com', 'Arthur', 'Björk', '2025-02-21 10:49:00'),(15, 'lilly.falk', 'lilly.falk@example.com', 'Lilly', 'Falk', '2025-02-25 13:36:00'),(16, 'hugo.ryd', 'hugo.ryd@example.com', 'Hugo', 'Ryd', '2025-03-01 08:07:00'),(17, 'isabella.west', 'isabella.west@example.com', 'Isabella', 'West', '2025-03-05 20:14:37'),(18, 'leo.ost', 'leo.ost@example.com', 'Leo', 'Öst', '2025-03-09 12:58:00'),(19, 'nora.blom', 'nora.blom@example.com', 'Nora', 'Blom', '2025-03-13 09:26:00'),(20, 'adam.skog', 'adam.skog@example.com', 'Adam', 'Skog', '2025-03-18 15:40:00');
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -173,7 +173,7 @@ CREATE TABLE `orders` (
   `customer_id` int NOT NULL,
   `shipping_address_id` int NOT NULL,
   `shipping_method_id` int NOT NULL,
-  `total_price` decimal(10,2) DEFAULT NULL,
+  `total_price` decimal(10,2) NOT NULL,
   `order_date` datetime DEFAULT CURRENT_TIMESTAMP,
   `order_status` enum('created','paid','shipped','delivered','cancelled') NOT NULL,
 
