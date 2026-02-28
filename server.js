@@ -19,14 +19,32 @@ app.get("/", (req, res) => {
 });
 
 // GET all products
-app.get("/products", (req, res) => {
+/* app.get("/products", (req, res) => {
   cn.query("SELECT * FROM products", (err, data) => {
     if (err) return res.status(500).send(err);
     res.status(200).send(data);
   });
-});
+}); */
 
 // Som kund vill jag kunna söka efter produkter så att jag snabbt kan hitta specifika varor
+app.get("/products", (req, res) => {
+  let sql = "SELECT * FROM products WHERE 1=1";
+  const params = [];
+
+  if (req.query.search) {
+    sql += " AND product_name LIKE ?";
+    params.push(`%${req.query.search}%`);
+  }
+  /* if (req.query.minPrice) {
+    sql += " AND listing_price >= ?";
+    params.push(req.query.minPrice);
+  } */
+
+  cn.query(sql, params, (err, data) => {
+    if (err) return res.status(500).send(err);
+    res.json(data);
+  });
+});
 
 // GET a specific product
 app.get("/products/:id", (req, res) => {
