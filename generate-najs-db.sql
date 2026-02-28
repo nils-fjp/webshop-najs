@@ -1,8 +1,8 @@
-CREATE DATABASE  IF NOT EXISTS `webshop-db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `webshop-db`;
+CREATE DATABASE  IF NOT EXISTS `najs-db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `najs-db`;
 -- MySQL dump 10.13  Distrib 8.0.44, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: webshop-db
+-- Host: 127.0.0.1    Database: najs-db
 -- ------------------------------------------------------
 -- Server version	8.0.44
 
@@ -27,10 +27,10 @@ DROP TABLE IF EXISTS `categories`;
 CREATE TABLE `categories` (
   `category_id` int NOT NULL AUTO_INCREMENT,
   `category_name` varchar(45) NOT NULL,
-  `category_description` mediumtext,
+  `category_description` mediumtext DEFAULT NULL,
   PRIMARY KEY (`category_id`),
   UNIQUE KEY `category_name_UNIQUE` (`category_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -58,12 +58,12 @@ CREATE TABLE `customer_addresses` (
   `country` varchar(45) DEFAULT NULL,
   `state_or_province` varchar(45) DEFAULT NULL,
   `city` varchar(45) DEFAULT NULL,
-  `address_type` enum('shipping','billing','residence') NOT NULL,
+  `address_type` enum('shipping','billing','residence') NOT NULL DEFAULT 'shipping',
   `care_of` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`address_id`),
   KEY `fk_adresses_customer_idx` (`customer_id`),
   CONSTRAINT `fk_addresses_customer_id` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -86,10 +86,10 @@ DROP TABLE IF EXISTS `customer_passwords`;
 CREATE TABLE `customer_passwords` (
   `customer_id` int NOT NULL AUTO_INCREMENT,
   `password_hash` varchar(255) DEFAULT NULL,
-  `password_updated_at` datetime NOT NULL,
+  `password_updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`customer_id`),
   CONSTRAINT `fk_passwords_customer_id` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -111,13 +111,15 @@ DROP TABLE IF EXISTS `customers`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `customers` (
   `customer_id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(45) DEFAULT NULL,
   `email` varchar(45) NOT NULL,
   `first_name` varchar(45) DEFAULT NULL,
   `last_name` varchar(45) DEFAULT NULL,
-  `created` datetime(5) DEFAULT NULL,
+  `created` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`customer_id`),
-  UNIQUE KEY `email_UNIQUE` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb3;
+  UNIQUE KEY `email_UNIQUE` (`email`),
+  UNIQUE KEY `username_UNIQUE` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -126,7 +128,7 @@ CREATE TABLE `customers` (
 
 LOCK TABLES `customers` WRITE;
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
-INSERT INTO `customers` VALUES (1,'alice.nyberg@example.com','Alice','Nyberg','2025-01-04 10:12:00.00000'),(2,'oscar.lind@example.com','Oscar','Lind','2025-01-06 09:41:00.00000'),(3,'emma.soder@example.com','Emma','Söder','2025-01-09 15:20:00.00000'),(4,'liam.berg@example.com','Liam','Berg','2025-01-12 13:05:00.00000'),(5,'mia.holm@example.com','Mia','Holm','2025-01-15 18:11:00.00000'),(6,'noah.ek@example.com','Noah','Ek','2025-01-18 08:55:00.00000'),(7,'ella.strom@example.com','Ella','Ström','2025-01-22 12:33:00.00000'),(8,'oliver.dahl@example.com','Oliver','Dahl','2025-01-25 17:45:00.00000'),(9,'ava.sand@example.com','Ava','Sand','2025-02-01 11:02:00.00000'),(10,'elias.karlsson@example.com','Elias','Karlsson','2025-02-04 09:10:00.00000'),(11,'signe.ahl@example.com','Signe','Ahl','2025-02-08 16:28:00.00000'),(12,'william.hed@example.com','William','Hed','2025-02-12 14:03:00.00000'),(13,'freya.noren@example.com','Freya','Norén','2025-02-17 19:22:00.00000'),(14,'arthur.bjork@example.com','Arthur','Björk','2025-02-21 10:49:00.00000'),(15,'lilly.falk@example.com','Lilly','Falk','2025-02-25 13:36:00.00000'),(16,'hugo.ryd@example.com','Hugo','Ryd','2025-03-01 08:07:00.00000'),(17,'isabella.west@example.com','Isabella','West','2025-03-05 20:14:00.00000'),(18,'leo.ost@example.com','Leo','Öst','2025-03-09 12:58:00.00000'),(19,'nora.blom@example.com','Nora','Blom','2025-03-13 09:26:00.00000'),(20,'adam.skog@example.com','Adam','Skog','2025-03-18 15:40:00.00000');
+INSERT INTO `customers` VALUES (1,'alice.nyberg','alice.nyberg@example.com','Alice','Nyberg','2025-01-04 10:12:00'),(2,'oscar.lind','oscar.lind@example.com','Oscar','Lind','2025-01-06 09:41:00'),(3,'emma.soder','emma.soder@example.com','Emma','Söder','2025-01-09 15:20:00'),(4,'liam.berg','liam.berg@example.com','Liam','Berg','2025-01-12 13:05:00'),(5,'mia.holm','mia.holm@example.com','Mia','Holm','2025-01-15 18:11:00'),(6,'noah.ek','noah.ek@example.com','Noah','Ek','2025-01-18 8:55:37'),(7,'ella.strom','ella.strom@example.com','Ella','Ström', '2999-12-31 23:59:59'),(8,'oliver.dahl', 'oliver.dahl@example.com', 'Oliver', 'Dahl', '2999-12-31 23:59:59'),(9,'ava.sand', 'ava.sand@example.com', 'Ava', 'Sand', '2999-12-31 23:59:59'),(10, 'elias.karlsson', 'elias.karlsson@example.com', 'Elias', 'Karlsson', '2888-12-31 23:58:44'),(11, 'signe.ahl', 'signe.ahl@example.com', 'Signe', 'Ahl', '3666-66-66 66:66:66'),(12, 'william.hed', 'william.hed@example.com', 'William', 'Hed', '3777-77-77 77:77:77'),(13, 'freya.noren', 'freya.noren@example.com', 'Freya', 'Norén', '2025-02-17 19:22:00'),(14, 'arthur.bjork', 'arthur.bjork@example.com', 'Arthur', 'Björk', '2025-02-21 10:49:00'),(15, 'lilly.falk', 'lilly.falk@example.com', 'Lilly', 'Falk', '2025-02-25 13:36:00'),(16, 'hugo.ryd', 'hugo.ryd@example.com', 'Hugo', 'Ryd', '2025-03-01 08:07:00'),(17, 'isabella.west', 'isabella.west@example.com', 'Isabella', 'West', '2025-03-05 20:14:37'),(18, 'leo.ost', 'leo.ost@example.com', 'Leo', 'Öst', '2025-03-09 12:58:00'),(19, 'nora.blom', 'nora.blom@example.com', 'Nora', 'Blom', '2025-03-13 09:26:00'),(20, 'adam.skog', 'adam.skog@example.com', 'Adam', 'Skog', '2025-03-18 15:40:00');
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -148,7 +150,7 @@ CREATE TABLE `order_items` (
   KEY `fk_order_idx` (`order_id`),
   CONSTRAINT `fk_order_id` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
   CONSTRAINT `fk_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -171,8 +173,8 @@ CREATE TABLE `orders` (
   `customer_id` int NOT NULL,
   `shipping_address_id` int NOT NULL,
   `shipping_method_id` int NOT NULL,
-  `total_price` decimal(10,2) DEFAULT NULL,
-  `order_date` datetime DEFAULT NULL,
+  `total_price` decimal(10,2) NOT NULL,
+  `order_date` datetime DEFAULT CURRENT_TIMESTAMP,
   `order_status` enum('created','paid','shipped','delivered','cancelled') NOT NULL,
 
   PRIMARY KEY (`order_id`),
@@ -189,7 +191,7 @@ CREATE TABLE `orders` (
 
   CONSTRAINT `fk_shipping_method_id`
     FOREIGN KEY (`shipping_method_id`) REFERENCES `shipping_methods` (`shipping_methods_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -221,7 +223,7 @@ CREATE TABLE `payments` (
   KEY `fk_payments_order_idx` (`order_id`),
   CONSTRAINT `fk_billing_address_id` FOREIGN KEY (`billing_address_id`) REFERENCES `customer_addresses` (`address_id`),
   CONSTRAINT `fk_payments_order_id` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -249,7 +251,7 @@ CREATE TABLE `product_categories` (
   KEY `fk_categories_product_idx` (`product_id`),
   CONSTRAINT `fk_categories_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`),
   CONSTRAINT `fk_products_category_id` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -277,7 +279,7 @@ CREATE TABLE `product_tags` (
   KEY `fk_products_tag_idx` (`tag_id`),
   CONSTRAINT `fk_products_tag_id` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`tag_id`),
   CONSTRAINT `fk_tags_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -303,10 +305,10 @@ CREATE TABLE `products` (
   `product_code` varchar(45) DEFAULT NULL,
   `listing_price` decimal(10,2) NOT NULL DEFAULT 0.00,
   `stock_quantity` int NOT NULL DEFAULT 0,
-  `product_description` mediumtext,
+  `product_description` mediumtext DEFAULT NULL,
   PRIMARY KEY (`product_id`),
   UNIQUE KEY `product_code_UNIQUE` (`product_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -355,7 +357,7 @@ CREATE TABLE `tags` (
   `tag_type_id` int NOT NULL,
   `tag_content` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`tag_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
