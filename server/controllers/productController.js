@@ -1,12 +1,12 @@
-const productModel = require("../models/productModel");
-
-const productController = {
-  getAll: async (req, res) => {
-    try {
-      const products = await productModel.findAll();
-      res.status(200).json(products);
-    } catch (error) {
-      res.status(500).json({ error: "Internal server error" });
+const productModel = require("../models/productModel"); // Import product model to interact with the database
+// Controller functions for product routes
+const productController = { 
+  getAll: async (req, res) => { // GET /api/products
+    try { // Call model to get all products
+      const products = await productModel.findAll(); // Return products as JSON
+      res.status(200).json(products); // Handle errors
+    } catch (error) { // Log error and return 500 status
+      res.status(500).json({ error: "Internal server error" }); // In production, consider logging the error to a file or monitoring service
     }
   },
   getProductById: async (req, res) => {
@@ -31,7 +31,7 @@ const productController = {
   },
   createAdmin: async (req, res) => {
     try {
-      const {
+      const { // Extract fields from request body
         product_name,
         product_code,
         listing_price,
@@ -40,7 +40,7 @@ const productController = {
       } = req.body;
       // Basic validation
       if (
-        product_name === undefined ||
+        product_name === undefined || // Check for missing fields
         product_code === undefined ||
         listing_price === undefined ||
         stock_quantity === undefined ||
@@ -48,8 +48,8 @@ const productController = {
       ) {
         return res.status(400).json({ error: "Missing required fields" });
       }
-      const insertId = await productModel.createAdmin({
-        product_name,
+      const insertId = await productModel.createAdmin({ // Call model to create product
+        product_name, // Return success message with new product ID
         product_code,
         listing_price,
         stock_quantity,
@@ -75,13 +75,13 @@ const productController = {
       } = req.body;
       // Basic validation
       if (
-        product_id === undefined) {
+        product_id === undefined) { // Check for missing product_id
         return res.status(400).json({ error: "Missing required fields" });
       }
-      if (isNaN(Number(product_id))) {
+      if (isNaN(Number(product_id))) { // Check if product_id is a valid number
         return res.status(400).json({ error: "Invalid product_id" });
       }
-      const affectedRows = await productModel.updateById(product_id, {
+      const affectedRows = await productModel.updateById(product_id, { // Call model to update product
         product_name,
         product_code,
         listing_price,
@@ -106,8 +106,8 @@ const productController = {
         return res.status(400).json({ error: "Invalid product_id" });
       }
       //extract fields to update
-      const updates = {};
-      const fields = [
+      const updates = {}; // Only include fields that are provided in the request body
+      const fields = [ // List of fields that can be updated
         "product_name",
         "product_code",
         "listing_price",
@@ -296,4 +296,4 @@ const productController = {
   },
 };
 
-module.exports = productController;
+module.exports = productController; // Export the controller to be used in routes
