@@ -1,15 +1,26 @@
 const express = require("express");
-const app = express();
-const PORT = 3007;
 const cors = require("cors");
 
+const app = express();
+const PORT = process.env.PORT || 3007;
+
 const productRoutes = require("./routes/productRoutes");
-const orderRoutes = require("./routes/orderRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const userRoutes = require("./routes/userRoutes");
+const categoryRoutes = require("./routes/categoryRoutes");
 
 app.use(cors());
 app.use(express.json());
 
-app.use("/products", productRoutes);
-/* app.use("/", orderRoutes); */
+app.get("/", (req, res) => {
+  res.status(200).send("Hej");
+});
 
-app.listen(PORT);
+app.use("/products", productRoutes);
+app.use("/admin", adminRoutes);
+app.use("/categories", categoryRoutes);
+app.use("/", userRoutes);
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});

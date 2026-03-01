@@ -46,7 +46,7 @@
         data = await fetch(
           `http://localhost:${port.value}/${endpoint.value}`,
         ).then((res) => res.json());
-        data.then(renderTable(data));
+        renderTable(data);
       });
       searchField.addEventListener("input", async () => {
         data = await fetch(

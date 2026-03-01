@@ -1,6 +1,6 @@
 const connection = require("../config/db");
 
-exports.getAll = (req, res) => {
+exports.getAllProducts = (req, res) => {
   let sql = "SELECT * FROM products WHERE 1=1";
   const params = [];
 
@@ -15,10 +15,10 @@ exports.getAll = (req, res) => {
   });
 };
 
-exports.getById = (req, res) => {
+exports.getProductById = (req, res) => {
   connection.query(
     `SELECT * FROM products WHERE product_id = ?`,
-    [req.params.id],
+    [req.params.product_id],
     (err, data) => {
       if (err) return res.status(500).send(err);
       res.status(200).send(data);
