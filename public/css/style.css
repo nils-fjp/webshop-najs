@@ -1,0 +1,14 @@
+/* Base styles - Variables, fundamentals, and main container */
+@import url("base.css");
+
+/* Navigation - Header and menu */
+@import url("header.css");
+
+/* Cart - Shopping cart styles */
+@import url("cart.css");
+
+/* Products - Product cards and display */
+@import url("products.css");
+
+/* Footer - Page footer styles */
+@import url("footer.css");

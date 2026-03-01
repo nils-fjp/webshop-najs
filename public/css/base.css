@@ -1,0 +1,303 @@
+/* =============================================
+   BASE.CSS - Variables and Fundamental Styles
+   Base design system for Tech Store
+   ============================================= */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&family=Recursive:wght@300..1000&display=swap");
+
+/* =============================================
+   CSS VARIABLES - Design Token System
+   ============================================= */
+
+:root {
+  /* Main Colors - Tech Palette */
+  --primary-bg: #0a0e27;
+  --secondary-bg: #151b3d;
+  --surface: #1a2142;
+  --surface-elevated: #222a4f;
+
+  /* Tech Accents */
+  --accent-cyan: #44c2c2;
+  --accent-blue: #0066ff;
+  --accent-purple: #6366f1;
+  --accent-gradient: linear-gradient(
+    130deg,
+    #44c2c2 0%,
+    #0066ff 45%,
+    #8e63f1 100%
+  );
+
+  /* State Colors */
+  --success: #00ff88;
+  --warning: #ffb800;
+  --error: #ff3366;
+
+  /* Neutral Tones */
+  --text-primary: #e8edf5;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border: rgba(68, 194, 194, 0.2);
+  --border-hover: rgba(68, 194, 194, 0.3);
+
+  /* Effects and Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3); /* subtle shadow */
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4); /* moderate shadow */
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5); /* strong shadow */
+  --shadow-glow: 0 0 20px rgba(68, 194, 194, 0.3); /* glow effect */
+  --shadow-glow-hover: 0 0 30px rgba(68, 194, 194, 0.5); /* intensified glow on hover */
+
+  /* Spacing System */
+  --spacing-xs: clamp(0.375rem, 1vw, 0.5rem); /* extra small spacing */
+  --spacing-sm: clamp(0.75rem, 2vw, 1rem); /* small spacing */
+  --spacing-md: clamp(1rem, 3vw, 1.5rem); /* medium spacing */
+  --spacing-lg: clamp(1.5rem, 4vw, 2rem); /* large spacing */
+  --spacing-xl: clamp(2rem, 5vw, 3rem); /* extra large spacing */
+  --spacing-2xl: clamp(2.5rem, 7vw, 4rem); /* double extra large spacing */
+
+  /* Transitions */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1); /* quick transition */
+  --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* base transition */
+  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* slow transition */
+  --transition-menu: 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* mobile menu transition */
+
+  /* Typography */
+  --font-body: "Inter", sans-serif;
+  --font-heading: "Recursive", sans-serif;
+  --font-mono: "Cascadia Mono", monospace;
+  --line-height-base: 1.6;
+  --letter-spacing-tight: -0.02em;
+  --letter-spacing-subtle: -0.01em;
+  --letter-spacing-wide: 0.01em;
+
+  /* Supplementary Colors */
+  --text-on-gradient: white; /* text color on gradient backgrounds */
+  --accent-cyan-light: rgba(0, 212, 255, 0.1); /* subtle cyan highlight */
+  --shimmer-color: rgba(255, 255, 255, 0.2); /* shine/shimmer overlay */
+  --glow-subtle: rgba(0, 212, 255, 0.03); /* decorative background glow */
+
+  /* Layout Sizes */
+  --max-width-container: 1400px;
+  --search-width: 400px;
+  --button-size: 48px;
+  --button-size-sm: 44px;
+  --scrollbar-size: 10px;
+  --spinner-size: 60px;
+  --cart-panel-max-width: 600px;
+  --cart-body-max-height: 400px;
+  --mobile-nav-max-height: 400px;
+  --notification-min-width: 300px;
+  --notification-max-width: 400px;
+
+  /* Border Radius */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-round: 50%;
+  --scrollbar-radius: 5px;
+
+  /* Border Widths */
+  --border-width-base: 2px;
+  --border-width-thick: 3px;
+  --border-width-accent: 4px;
+
+  /* Semantic aliases used by layout */
+  --bg-color: var(--primary-bg);
+  --text-color: var(--text-primary);
+}
+/* =============================================
+   LIGHT MODE
+   ============================================= */
+body.light-mode {
+  /* Background and text colors */
+  --bg-color: #f5f6fa;
+  --text-color: #202020;
+
+  /* Main Colors - Light Tech Palette */
+  --primary-bg: #ffffff;
+  --secondary-bg: #f5f6fa;
+  --surface: #ffffff;
+  --surface-elevated: #f5f6fa;
+
+  /* Tech Accents - Keep vibrant for light mode */
+  --accent-cyan: #44c2c2;
+  --accent-blue: #4aa5f0;
+  --accent-purple: #de62de;
+  --accent-gradient: linear-gradient(
+    130deg,
+    #44c2c2ce 0%,
+    #4aa5f0 45%,
+    #de78dece 100%
+  );
+
+  /* State Colors - Adjust for light background */
+  --success: #98c379;
+  --warning: #e6c17c;
+  --error: #e06c75;
+
+  /* Neutral Tones - Darker for light mode */
+  --text-primary: #202020;
+  --text-secondary: #282c34;
+  --text-muted: #5a6374;
+  --border: rgba(0, 0, 0, 0.1);
+  --border-hover: rgba(68, 194, 194, 0.3);
+
+  /* Effects and Shadows - Softer for light mode */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 20px rgba(68, 194, 194, 0.2);
+  --shadow-glow-hover: 0 0 30px rgba(68, 194, 194, 0.3);
+
+  /* Supplementary Colors - Light mode overrides */
+  --text-on-gradient: white;
+  --accent-cyan-light: rgba(0, 168, 204, 0.1);
+  --shimmer-color: rgba(255, 255, 255, 0.3);
+  --glow-subtle: rgba(0, 168, 204, 0.03);
+}
+/* =============================================
+   RESET AND BASE STYLES
+   ============================================= */
+
+* {
+  margin: 0; /* reset default margin */
+  padding: 0; /* reset default padding */
+  box-sizing: border-box; /* include padding and border in element's total width and height */
+}
+
+body {
+  font-family: var(--font-body); /* modern sans-serif font stack */
+  background: var(--bg-color); /* use semantic variable for background */
+  color: var(--text-color); /* use semantic variable for text color */
+  line-height: var(--line-height-base); /* improved readability */
+  overflow-x: hidden; /* prevent horizontal scroll */
+  position: relative; /* establish a new stacking context */
+  min-height: 100vh; /* ensure body takes full viewport height */
+}
+
+/* Tech background effect with subtle grid and gradient */
+body::before {
+  content: ""; /* pseudo-element for background effect */
+  position: fixed; /* fixed position to cover the entire viewport */
+  top: 0; /* align to top */
+  left: 0; /* align to left */
+  width: 100%; /* full width */
+  height: 100%; /* full height */
+  background:
+    radial-gradient(
+      circle at 20% 50%,
+      rgba(0, 212, 255, 0.05) 0%,
+      transparent 50%
+    ),
+    /* subtle cyan glow */
+    radial-gradient(
+        circle at 80% 80%,
+        rgba(99, 102, 241, 0.05) 0%,
+        transparent 50%
+      ),
+    /* subtle purple glow */
+    linear-gradient(90deg, rgba(0, 212, 255, 0.02) 1px, transparent 1px),
+    /* vertical grid lines */
+    linear-gradient(rgba(0, 212, 255, 0.02) 1px, transparent 1px); /* horizontal grid lines */
+  background-size:
+    100% 100%,
+    100% 100%,
+    clamp(30px, 8vw, 50px) clamp(30px, 8vw, 50px); /* grid size */
+  pointer-events: none; /* allow interactions through the pseudo-element */
+  z-index: 0; /* place behind all content */
+}
+
+/* Light mode background effect - more subtle */
+body.light-mode::before {
+  background:
+    radial-gradient(
+      circle at 20% 50%,
+      rgba(0, 168, 204, 0.03) 0%,
+      transparent 50%
+    ),
+    /* subtle cyan glow for light mode */
+    radial-gradient(
+        circle at 80% 80%,
+        rgba(90, 95, 212, 0.03) 0%,
+        transparent 50%
+      ),
+    /* subtle purple glow for light mode */
+    linear-gradient(90deg, rgba(0, 168, 204, 0.01) 1px, transparent 1px),
+    /* vertical grid lines for light mode */
+    linear-gradient(rgba(0, 168, 204, 0.01) 1px, transparent 1px); /* horizontal grid lines for light mode */
+  background-size:
+    100% 100%,
+    100% 100%,
+    50px 50px,
+    50px 50px; /* grid size */
+}
+
+/* =============================================
+   MAIN CONTENT CONTAINER
+   Migrated from layout.css - main page wrapper
+   ============================================= */
+
+main {
+  max-width: var(--max-width-container);
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+  position: relative;
+  z-index: 1;
+  min-height: 70vh;
+}
+
+/* =============================================
+   CUSTOM SCROLLBAR
+   ============================================= */
+
+::-webkit-scrollbar {
+  width: var(--scrollbar-size); /* scrollbar width */
+  height: var(--scrollbar-size); /* scrollbar height */
+}
+
+::-webkit-scrollbar-track {
+  background: var(--primary-bg); /* track background color */
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface-elevated); /* thumb background color */
+  border-radius: var(--scrollbar-radius); /* rounded corners */
+  border: var(--border-width-base) solid var(--primary-bg); /* space around thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-cyan); /* thumb hover color */
+}
+
+/* =============================================
+   UTILITY CLASSES
+   ============================================= */
+
+.text-gradient {
+  background: var(--accent-gradient); /* gradient text effect */
+  -webkit-background-clip: text; /* clip background to text */
+  -webkit-text-fill-color: transparent; /* make text fill transparent */
+  background-clip: text; /* clip background to text */
+}
+
+.glow {
+  box-shadow: var(--shadow-glow); /* glow effect */
+}
+
+.glow-hover:hover {
+  box-shadow: var(--shadow-glow-hover); /* intensified glow on hover */
+}
+
+/* =============================================
+   ANIMATIONS
+   ============================================= */
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}

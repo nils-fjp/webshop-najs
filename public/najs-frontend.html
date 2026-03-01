@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="assets/svg/neonmarket-favicon.svg"
+      type="image/x-icon"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <title>najs frontend</title>
+  </head>
+  <body>
+    <header>
+      <section id="top">
+        <h1 id="logo">
+          <a href="#" title="najs frontend">
+            <img
+              srcset="
+                assets/svg/neonmarket-logo-mobile.svg  600w,
+                assets/svg/neonmarket-logo-desktop.svg 900w
+              "
+              sizes="(width <= 600px) 600px, 900px"
+              src="assets/svg/neonmarket-logo-mobile.svg"
+              alt="Neon Market"
+              class="logo-mobile"
+            />
+            <img src="" alt="" sizes="" srcset="" />
+          </a>
+        </h1>
+        <search id="search">
+          <input
+            id="searchField"
+            type="search"
+            name="search"
+            placeholder=" Search for products ..."
+          />
+          <button id="searchBtn" type="submit">🔎</button>
+        </search>
+        <button class="theme-button" id="theme" type="button">🌙</button>
+        <button class="login-button" id="login" type="button">👤</button>
+        <button class="cart-button" id="cart" type="button">
+          🛒<span class="cart-badge" id="cartBadge">0</span>
+        </button>
+        <a href="#" id="categories"
+          ><button type="button" id="hamburger">☰</button></a
+        >
+      </section>
+      <nav id="main-nav">
+        <ul id="nav-list">
+          <li><a href="#products" product-category="all">All Products</a></li>
+          <li>
+            <a href="#products" product-category="computing">Computing</a>
+          </li>
+          <li><a href="#products" product-category="gaming">Gaming</a></li>
+          <li><a href="#products" product-category="audio">Audio</a></li>
+          <li>
+            <a href="#products" product-category="wearables">Wearables</a>
+          </li>
+          <li>
+            <a href="#products" product-category="accessories">Accessories</a>
+          </li>
+          <li>
+            <a href="#more" id="more">More Categories</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <section id="products">
+        <product
+          class="product-card"
+          product-id="1"
+          product-name="Gaming Laptop"
+          product-category="gaming"
+        >
+          <img
+            class="product-image"
+            src="assets/png/laptop-1.png"
+            alt="Gaming Laptop"
+            loading="lazy"
+            decoding="async"
+          />
+          <h2 class="product-title">Gaming Laptop</h2>
+          <p class="product-description">
+            High-performance gaming laptop with RTX graphics card and Intel i7
+            processor. Perfect for gaming and content creation.
+          </p>
+          <div class="product-details">
+            <span class="listing-price">$1499.99</span>
+            <button type="button" class="add-to-cart">Add to Cart</button>
+          </div>
+        </product>
+      </section>
+    </main>
+    <footer>
+      <div class="footer-content">
+        <!-- Column 1: About -->
+        <div class="footer-column">
+          <h4 class="text-gradient">About Neon Market</h4>
+          <p>
+            Your trusted tech marketplace for the latest electronics, gaming
+            gear, and accessories.
+          </p>
+          <div class="footer-social">
+            <a href="#" class="social-link" aria-label="Facebook">📘</a>
+            <a href="#" class="social-link" aria-label="Twitter">🐦</a>
+            <a href="#" class="social-link" aria-label="Instagram">📷</a>
+            <a href="#" class="social-link" aria-label="YouTube">📺</a>
+          </div>
+        </div>
+
+        <!-- Column 2: Quick Links -->
+        <div class="footer-column">
+          <h4 class="text-gradient">Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="#">Shipping Info</a></li>
+            <li><a href="#">Returns Policy</a></li>
+            <li><a href="#">Track Order</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 3: Customer Service -->
+        <div class="footer-column">
+          <h4 class="text-gradient">Customer Service</h4>
+          <ul class="footer-links">
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Warranty Info</a></li>
+            <li><a href="#">Affiliate Program</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 4: Newsletter -->
+        <div class="footer-column">
+          <h4 class="text-gradient">Stay Updated</h4>
+          <p>Subscribe to our newsletter for exclusive deals and updates.</p>
+          <form class="footer-newsletter">
+            <input
+              type="email"
+              class="newsletter-input"
+              placeholder="Enter your email"
+              required
+            />
+            <button type="submit" class="newsletter-btn">Subscribe</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Footer Bottom -->
+      <div class="footer-bottom">
+        <div class="footer-copyright">
+          &copy; 2026 Najs frontendprojekt.
+          <b><i>Upphovsrättsbrott beivras ej.</i></b>
+        </div>
+        <div class="footer-payments">
+          <span>We Accept:</span>
+          <div class="payment-icon">VISA</div>
+          <div class="payment-icon">MC</div>
+          <div class="payment-icon">Swish</div>
+          <div class="payment-icon">PayPal</div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">
+      ↑
+    </button>
+
+    <!-- Shopping Cart Modal -->
+    <div class="cart-modal" id="cartModal">
+      <div class="cart-panel">
+        <div class="cart-header">
+          <h2 class="cart-title text-gradient">Shopping Cart</h2>
+          <button class="cart-close" id="cartClose">×</button>
+        </div>
+
+        <div class="cart-body" id="cartBody">
+          <div class="cart-empty" id="cartEmpty">
+            <div class="cart-empty-icon">🛒</div>
+            <div class="cart-empty-text">Your cart is empty</div>
+          </div>
+        </div>
+
+        <div class="cart-footer" id="cartFooter" style="display: none">
+          <div class="cart-summary">
+            <div class="cart-summary-row">
+              <span class="cart-summary-label">Subtotal:</span>
+              <span class="cart-summary-value" id="cartSubtotal">$0.00</span>
+            </div>
+            <div class="cart-summary-row">
+              <span class="cart-summary-label">Shipping:</span>
+              <span class="cart-summary-value" id="cartShipping">$0.00</span>
+            </div>
+            <div class="cart-summary-row cart-total">
+              <span class="cart-summary-label">Total:</span>
+              <span class="cart-summary-value text-gradient" id="cartTotal"
+                >$0.00</span
+              >
+            </div>
+          </div>
+
+          <div class="cart-actions">
+            <button class="cart-btn cart-btn-clear" id="cartClear">
+              Clear Cart
+            </button>
+            <button class="cart-btn cart-btn-checkout" id="cartCheckout">
+              Checkout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cart Notification -->
+    <div class="cart-notification" id="cartNotification">
+      <div class="cart-notification-icon">✓</div>
+      <div class="cart-notification-content">
+        <div class="cart-notification-title">Added to cart!</div>
+        <div class="cart-notification-text" id="notificationText">
+          Product added successfully
+        </div>
+      </div>
+    </div>
+    <script src="js/themeToggle.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/categories.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
