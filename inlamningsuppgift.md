@@ -7,10 +7,10 @@
 - [x] Som kund vill jag kunna se alla tillgängliga produkter så att jag kan bläddra i sortimentet
 - [x] Som kund vill jag kunna se detaljerad information om en enskild produkt så att jag kan fatta köpbeslut
 
-- Som kund vill jag kunna slutföra ett köp/lägga en order så att jag kan genomföra mina inköp
+- [o] Som kund vill jag kunna slutföra ett köp/lägga en order så att jag kan genomföra mina inköp (stock, osv...)
 - [x] Som kund vill jag kunna se mina tidigare ordrar så att jag har koll på min köphistorik
 - [x] Som kund vill jag kunna filtrera produkter efter kategori så att jag hittar vad jag söker snabbare
-- Som kund vill jag kunna söka efter produkter så att jag snabbt kan hitta specifika varor
+- [o] Som kund vill jag kunna söka efter produkter så att jag snabbt kan hitta specifika varor (sök knapp måste fixas)
 
 ### Admin-perspektiv
 
