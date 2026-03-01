@@ -1,0 +1,309 @@
+/* =============================================
+   FOOTER.CSS - Professional Footer Styles
+   MOBILE FIRST with clamp() - No media queries needed!
+   ============================================= */
+
+/* =============================================
+   FOOTER CONTAINER
+   ============================================= */
+
+footer {
+  background: var(--secondary);
+  border-top: 1px solid var(--border);
+  padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 3vw, 1.5rem)
+    clamp(1rem, 2vw, 1.5rem);
+  position: relative;
+  z-index: 1;
+}
+
+/* Gradient overlay */
+footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle at 50% 0%,
+    var(--glow-subtle) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* =============================================
+   FOOTER CONTENT - Mobile First Grid
+   ============================================= */
+
+.footer-content {
+  max-width: var(--max-width-container);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(clamp(220px, 45vw, 250px), 1fr)
+  );
+  gap: clamp(1.5rem, 4vw, 2.5rem);
+  position: relative;
+}
+
+/* =============================================
+   FOOTER SECTIONS
+   ============================================= */
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 2vw, 1rem);
+}
+
+.footer-column h4 {
+  font-size: clamp(1rem, 2.2vw, 1.1rem);
+  font-weight: 700;
+  font-family: var(--font-heading);
+  margin-bottom: clamp(0.25rem, 1vw, 0.5rem);
+}
+
+.footer-column p {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-size: clamp(0.875rem, 1.8vw, 0.95rem);
+}
+
+/* =============================================
+   FOOTER LINKS
+   ============================================= */
+
+.footer-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.5rem, 1.5vw, 0.75rem);
+}
+
+.footer-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  gap: clamp(0.25rem, 1vw, 0.5rem);
+  font-size: clamp(0.875rem, 1.8vw, 0.95rem);
+}
+
+.footer-links a::before {
+  content: "→";
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all var(--transition-base);
+}
+
+.footer-links a:hover {
+  color: var(--accent-cyan);
+  padding-left: clamp(0.5rem, 1.5vw, 0.75rem);
+}
+
+.footer-links a:hover::before {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* =============================================
+   SOCIAL LINKS
+   ============================================= */
+
+.footer-social {
+  display: flex;
+  gap: clamp(0.5rem, 1.5vw, 0.75rem);
+  margin-top: clamp(0.75rem, 2vw, 1rem);
+  flex-wrap: wrap;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(36px, 8vw, 40px);
+  height: clamp(36px, 8vw, 40px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-round);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: clamp(1.1rem, 2.5vw, 1.2rem);
+  transition: all var(--transition-base);
+}
+
+.social-link:hover {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-glow);
+}
+
+/* =============================================
+   NEWSLETTER
+   ============================================= */
+
+.footer-newsletter {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.5rem, 1.5vw, 0.75rem);
+}
+
+.newsletter-input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: clamp(6px, 1.5vw, 8px);
+  padding: clamp(0.75rem, 2vw, 0.875rem) clamp(0.875rem, 2.5vw, 1rem);
+  color: var(--text-primary);
+  font-size: clamp(0.875rem, 1.8vw, 0.95rem);
+  transition: all var(--transition-base);
+}
+
+.newsletter-input:focus {
+  outline: none;
+  border-color: var(--accent-cyan);
+  box-shadow: var(--shadow-glow);
+}
+
+.newsletter-input::placeholder {
+  color: var(--text-muted);
+}
+
+.newsletter-btn {
+  background: var(--accent-gradient);
+  border: none;
+  border-radius: clamp(6px, 1.5vw, 8px);
+  padding: clamp(0.75rem, 2vw, 0.875rem) clamp(0.875rem, 2.5vw, 1rem);
+  color: var(--text-on-gradient);
+  font-weight: 600;
+  font-size: clamp(0.875rem, 1.8vw, 0.95rem);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-glow);
+}
+
+.newsletter-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow-hover);
+}
+
+/* =============================================
+   FOOTER BOTTOM
+   ============================================= */
+
+.footer-bottom {
+  max-width: var(--max-width-container);
+  margin: clamp(1.5rem, 4vw, 2.5rem) auto 0;
+  padding-top: clamp(1rem, 3vw, 1.5rem);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: clamp(0.75rem, 2vw, 1rem);
+  position: relative;
+}
+
+@media (max-width: 600px) {
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.footer-copyright {
+  color: var(--text-muted);
+  font-size: clamp(0.8rem, 1.7vw, 0.9rem);
+}
+
+.footer-copyright a {
+  color: var(--accent-cyan);
+  text-decoration: none;
+  transition: color var(--transition-base);
+}
+
+.footer-copyright a:hover {
+  color: var(--accent-blue);
+}
+
+/* =============================================
+   PAYMENT METHODS
+   ============================================= */
+
+.footer-payments {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.5rem, 1.5vw, 0.75rem);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.footer-payments span {
+  color: var(--text-muted);
+  font-size: clamp(0.75rem, 1.6vw, 0.85rem);
+  margin-right: clamp(0.25rem, 1vw, 0.5rem);
+}
+
+.payment-icon {
+  width: clamp(36px, 8vw, 40px);
+  height: clamp(24px, 5vw, 28px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: clamp(4px, 1vw, 6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(0.65rem, 1.4vw, 0.7rem);
+  color: var(--text-secondary);
+  transition: all var(--transition-base);
+}
+
+.payment-icon:hover {
+  border-color: var(--accent-cyan);
+  transform: translateY(-2px);
+}
+
+/* =============================================
+   BACK TO TOP BUTTON
+   ============================================= */
+
+.back-to-top {
+  position: fixed;
+  bottom: clamp(1rem, 3vw, 1.5rem);
+  right: clamp(1rem, 3vw, 1.5rem);
+  width: clamp(44px, 10vw, 50px);
+  height: clamp(44px, 10vw, 50px);
+  background: var(--accent-gradient);
+  border: none;
+  border-radius: var(--radius-round);
+  color: var(--text-on-gradient);
+  font-size: clamp(1.3rem, 3vw, 1.5rem);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.back-to-top:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-glow-hover);
+}
+
+/* =============================================
+   MOBILE FIRST WITH CLAMP() ✅
+   
+   - All sizing is fluid and responsive
+   - Only 1 media query for layout direction change
+   - Much cleaner than 2-3 media queries with fixed values
+   - Seamless adaptation across ALL screen sizes
+   ============================================= */
