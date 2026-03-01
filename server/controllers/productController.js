@@ -1,12 +1,12 @@
 const productModel = require("../models/productModel"); // Import product model to interact with the database
 // Controller functions for product routes
 const productController = { 
-  getAll: async (req, res) => { // GET /api/products
-    try { // Call model to get all products
-      const products = await productModel.findAll(); // Return products as JSON
-      res.status(200).json(products); // Handle errors
-    } catch (error) { // Log error and return 500 status
-      res.status(500).json({ error: "Internal server error" }); // In production, consider logging the error to a file or monitoring service
+  getAll: async (req, res) => {
+    try {
+      const products = await productModel.findAll(req.query.search);
+      res.status(200).json(products);
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
     }
   },
   getProductById: async (req, res) => {
@@ -206,7 +206,7 @@ const productController = {
       const productId = Number(req.params.id);
 
       if (Number.isNaN(productId)) {
-        return res.status(400).send("product_id must be a number. ");
+        return res.status(400).json({ error: "product_id must be a number" });
       }
 
       const {
@@ -226,13 +226,13 @@ const productController = {
       });
 
       if (affectedRows === 0) {
-        return res.status(404).send("Product not found. ");
+        return res.status(404).json({ error: "Product not found" });
       }
 
-      res.status(200).send(`Product ${productId} updated. `);
+      res.status(200).json({ message: `Product with ID ${productId} updated successfully` });
 
-    } catch (err) {
-      res.status(500).send(err);
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
     }
   },
   patchAdminById: async (req, res) => {
@@ -240,7 +240,7 @@ const productController = {
       const productId = Number(req.params.id);
 
       if (Number.isNaN(productId)) {
-        return res.status(400).send("product_id must be a number. ");
+        return res.status(400).json({ error: "product_id must be a number" });
       }
 
       const fields = [
@@ -259,19 +259,19 @@ const productController = {
       });
 
       if (Object.keys(updates).length === 0) {
-        return res.status(400).send("No fields provided for update. ");
+        return res.status(400).json({ error: "No fields provided for update" });
       }
 
       const affectedRows = await productModel.patchById(productId, updates);
 
       if (affectedRows === 0) {
-        return res.status(404).send("Product not found. ");
+        return res.status(404).json({ error: "Product not found" });
       }
 
-      res.status(200).send(`Product ${productId} updated. `);
+      res.status(200).json({ message: `Product with ID ${productId} updated successfully` });
 
-    } catch (err) {
-      res.status(500).send(err);
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
     }
   },
   deleteAdminById: async (req, res) => {
@@ -279,19 +279,19 @@ const productController = {
       const productId = Number(req.params.id);
 
       if (Number.isNaN(productId)) {
-        return res.status(400).send("product_id must be a number. ");
+        return res.status(400).json({ error: "product_id must be a number" });
       }
 
       const affectedRows = await productModel.deleteById(productId);
 
       if (affectedRows === 0) {
-        return res.status(404).send("Product not found. ");
+        return res.status(404).json({ error: "Product not found" });
       }
 
-      res.status(200).send(`Product ${productId} deleted. `);
+      res.status(200).json({ message: `Product with ID ${productId} deleted successfully` });
 
-    } catch (err) {
-      res.status(500).send(err);
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
     }
   },
 };

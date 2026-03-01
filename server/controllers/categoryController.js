@@ -1,7 +1,7 @@
 const categoryModel = require("../models/categoryModel");
 
 const categoryController = {
-  getProductById: async (req, res) => {
+  getProductsByCategoryId: async (req, res) => {
     try {
         const categories = await categoryModel.findProductsByCategoryId(req.params.id);
         res.status(200).json(categories);

@@ -2,16 +2,24 @@ const cn = require("../config/db"); // Import database connection
 
 // Product model with database interaction functions
 
-const productModel = { // Get all products (for customers)
-  findAll: async () => { // Return a promise that resolves with the list of products
-    return new Promise((resolve, reject) => { // Query to select all products from the database
-      cn.query("SELECT * FROM products", (err, results) => { // Handle database query results
-        if (err) return reject(err); // Reject promise on error
-        resolve(results); // Resolve promise with results on success
+const productModel = {
+  findAll: (searchQuery) => {
+    return new Promise((resolve, reject) => {
+      let sql = "SELECT * FROM products";
+      const params = [];
+
+      if (searchQuery) {
+        sql += " WHERE product_name LIKE ?";
+        params.push(`%${searchQuery}%`);
+      }
+
+      cn.query(sql, params, (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
       });
     });
   },
-  findById: async (id) => {
+  findById: (id) => {
     return new Promise((resolve, reject) => {
       cn.query(
         "SELECT * FROM products WHERE product_id = ?",
@@ -23,7 +31,7 @@ const productModel = { // Get all products (for customers)
       );
     });
   },
-  findAllAdmin: async () => {
+  findAllAdmin: () => {
     return new Promise((resolve, reject) => {
       cn.query("SELECT * FROM products ORDER BY product_id DESC", (err, results) => {
         if (err) return reject(err);
@@ -31,7 +39,7 @@ const productModel = { // Get all products (for customers)
       });
     });
   },
-  createAdmin: async (product) => {
+  createAdmin: (product) => {
     const {
       product_name,
       product_code,

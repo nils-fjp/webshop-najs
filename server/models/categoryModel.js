@@ -1,7 +1,7 @@
 const cn = require("../config/db");
 
 const categoryModel = {
-  findProductsByCategoryId: async (categoryId) => {
+  findProductsByCategoryId: (categoryId) => {
     return new Promise((resolve, reject) => {
       cn.query("SELECT products.*, categories.category_name FROM product_categories " +
         "JOIN products ON products.product_id = product_categories.product_id " +
