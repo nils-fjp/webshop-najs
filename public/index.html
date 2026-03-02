@@ -15,14 +15,29 @@
         <label>Port:<input id="port" type="number" value="3007" /></label>
         <label>Endpoint:<input id="endpoint" value="products" /></label>
         <button id="getBtn" type="submit">GET</button>
-
         <label
-          >Search:<input id="searchField" type="search" name="search"
+          >Search:<input id="searchField" type="search" name="search" /><button
+            id="searchBtn"
+            type="submit"
+          >
+            Sök
+          </button></label
+        >
+        <hr />
+        <label
+          >Username:<input id="usernameField" type="search" name="username"
         /></label>
-        <button id="searchBtn" type="submit">Sök</button>
+        <label
+          >Password:
+          <input type="password" name="pass" id="passwordField" /><button
+            id="passwordBtn"
+            type="submit"
+          >
+            Login
+          </button></label
+        >
       </form>
       <h3>Data laddad från backend:</h3>
-
       <table id="table"></table>
     </main>
     <footer>
@@ -42,7 +57,8 @@
                 .join``}</tr>`,
           ).join``;
       };
-      getBtn.addEventListener("click", async () => {
+      getBtn.addEventListener("click", async (event) => {
+        event.preventDefault();
         data = await fetch(
           `http://localhost:${port.value}/${endpoint.value}`,
         ).then((res) => res.json());

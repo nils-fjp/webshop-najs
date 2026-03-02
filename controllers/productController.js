@@ -11,7 +11,7 @@ exports.getAllProducts = (req, res) => {
 
   connection.query(sql, params, (err, data) => {
     if (err) return res.status(500).send(err);
-    res.json(data);
+    res.status(200).json(data);
   });
 };
 
