@@ -70,3 +70,49 @@ exports.getOrderById = (req, res) => {
     },
   );
 };
+
+// (SELECT customer_id FROM customers WHERE username = ?),
+exports.createOrder = (req, res) => {
+  connection.query(
+    `INSERT INTO orders (
+      customer_id, 
+      shipping_address_id, 
+      shipping_method_id, 
+      total_price, 
+      order_date, 
+      order_status
+    ) 
+    VALUES (?, ?, ?, ?, ?, ?)`,
+    [
+      req.body.customer_id,
+      req.body.shipping_address_id,
+      req.body.shipping_method_id,
+      req.body.total_price,
+      new Date(),
+      "created",
+    ],
+    (err, data) => {
+      if (err) return res.status(500).send(err);
+      req.body.order_items.forEach((item) => {
+        connection.query(
+          `INSERT INTO order_items (
+            order_id, 
+            product_id, 
+            product_quantity, 
+            item_price
+          ) VALUES (?, ?, ?, ?)`,
+          [
+            data.insertId,
+            item.product_id,
+            item.product_quantity,
+            item.item_price,
+          ],
+          (err, data) => {
+            if (err) return res.status(500).send(err);
+          },
+        );
+      });
+      res.status(201).send(`Order created. InsertId: ${data.insertId} `);
+    },
+  );
+};
