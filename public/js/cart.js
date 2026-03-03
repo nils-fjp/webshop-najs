@@ -1,407 +1,245 @@
-// =============================================
-// SHOPPING CART CLASS
-// =============================================
+// =======================
+// CONFIG
+// =======================
+const API_URL = "http://localhost:3007";
+const CART_KEY = "cart";
 
-// CLASS: ShoppingCart
-// This is like a blueprint for creating a shopping cart
-class ShoppingCart {
-    
-    // CONSTRUCTOR: Runs when we create a new cart
-    constructor() {
-        this.items = [];  // Array to store cart items
-        this.loadFromStorage();  // Load saved cart
-        this.setupButtons();  // Setup all buttons
-    }
-    
-    // =========================================
-    // LOCALSTORAGE METHODS
-    // =========================================
-    
-    // Load cart from browser memory
-    loadFromStorage() {
-        const savedCart = localStorage.getItem('cartItems');
-        
-        if (savedCart) {
-            this.items = JSON.parse(savedCart);
-        } else {
-            this.items = [];
-        }
-        
-        this.updateDisplay();
-    }
-    
-    // Save cart to browser memory
-    saveToStorage() { 
-        localStorage.setItem('cartItems', JSON.stringify(this.items));
-    }
-    
-    // =========================================
-    // ADD/REMOVE/UPDATE METHODS
-    // =========================================
-    
-    // Add item to cart
-    addItem(id, name, price) {
-        // Check if item already exists
-        let found = false;
-        
-        for (let i = 0; i < this.items.length; i++) {
-            if (this.items[i].id === id) {
-                // Item exists, increase quantity
-                this.items[i].quantity = this.items[i].quantity + 1;
-                found = true;
-                break;
-            }
-        }
-        
-        // If not found, add new item
-        if (!found) {
-            const newItem = {
-                id: id,
-                name: name,
-                price: parseFloat(price),
-                quantity: 1
-            };
-            this.items.push(newItem);
-        }
-        
-        this.saveToStorage();
-        this.updateDisplay();
-        this.showNotification(name);
-        this.animateCartIcon();
-    }
-    
-    // Remove item from cart
-    removeItem(id) {
-        const newItems = [];
-        
-        for (let i = 0; i < this.items.length; i++) {
-            if (this.items[i].id !== id) {
-                newItems.push(this.items[i]);
-            }
-        }
-        
-        this.items = newItems;
-        this.saveToStorage();
-        this.updateDisplay();
-    }
-    
-    // Change item quantity
-    changeQuantity(id, change) {
-        for (let i = 0; i < this.items.length; i++) {
-            if (this.items[i].id === id) {
-                this.items[i].quantity = this.items[i].quantity + change;
-                
-                // Remove if quantity is 0 or less
-                if (this.items[i].quantity <= 0) {
-                    this.removeItem(id);
-                    return;
-                }
-                break;
-            }
-        }
-        
-        this.saveToStorage();
-        this.updateDisplay();
-    }
-    
-    // Clear all items
-    clearAll() {
-        if (this.items.length === 0) return;
-        
-        const confirm = window.confirm('Clear all items from cart?');
-        
-        if (confirm) {
-            this.items = [];
-            this.saveToStorage();
-            this.updateDisplay();
-        }
-    }
-    
-    // =========================================
-    // CALCULATE METHODS
-    // =========================================
-    
-    // Calculate totals
-    calculateTotals() {
-        let subtotal = 0;
-        
-        // Add up all items
-        for (let i = 0; i < this.items.length; i++) {
-            const itemTotal = this.items[i].price * this.items[i].quantity;
-            subtotal = subtotal + itemTotal;
-        }
-        
-        // Calculate shipping
-        let shipping = 0;
-        if (subtotal > 0 && subtotal <= 1000) {
-            shipping = 25;
-        }
-        
-        const total = subtotal + shipping;
-        
-        return {
-            subtotal: subtotal,
-            shipping: shipping,
-            total: total
-        };
-    }
-    
-    // Count total items
-    getTotalItems() {
-        let total = 0;
-        
-        for (let i = 0; i < this.items.length; i++) {
-            total = total + this.items[i].quantity;
-        }
-        
-        return total;
-    }
-    
-    // =========================================
-    // DISPLAY UPDATE METHODS
-    // =========================================
-    
-    // Update everything on screen
-    updateDisplay() {
-        this.updateBadge();
-        this.updateItemsList();
-        this.updateTotals();
-    }
-    
-    // Update cart badge number
-    updateBadge() {
-        const badge = document.getElementById('cartBadge');
-        const total = this.getTotalItems();
-        
-        badge.textContent = total;
-        
-        if (total > 0) {
-            badge.style.display = 'flex';
-        } else {
-            badge.style.display = 'none';
-        }
-    }
-    
-    // Update cart items list
-    updateItemsList() {
-        const cartBody = document.getElementById('cartBody');
-        const emptyMessage = document.getElementById('cartEmpty');
-        const footer = document.getElementById('cartFooter');
-        
-        // Remove old items
-        const oldItems = cartBody.querySelectorAll('.cart-item');
-        for (let i = 0; i < oldItems.length; i++) {
-            oldItems[i].remove();
-        }
-        
-        // If cart is empty
-        if (this.items.length === 0) {
-            emptyMessage.style.display = 'block';
-            footer.style.display = 'none';
-            return;
-        }
-        
-        // Cart has items
-        emptyMessage.style.display = 'none';
-        footer.style.display = 'block';
-        
-        // Add each item
-        for (let i = 0; i < this.items.length; i++) {
-            const itemHTML = this.createItemHTML(this.items[i]);
-            cartBody.appendChild(itemHTML);
-        }
-    }
-    
-    // Create HTML for one item
-    createItemHTML(item) {
-        const div = document.createElement('div');
-        div.className = 'cart-item';
-        
-        div.innerHTML = `
-            <div class="cart-item-image">
-                <span style="font-size: 2rem;">📦</span>
-            </div>
-            <div class="cart-item-info">
-                <div class="cart-item-name">${item.name}</div>
-                <div class="cart-item-price text-gradient">$${item.price.toFixed(2)}</div>
-                <div class="cart-item-quantity">
-                    <button class="quantity-btn" data-id="${item.id}" data-action="decrease">−</button>
-                    <span class="quantity-value">${item.quantity}</span>
-                    <button class="quantity-btn" data-id="${item.id}" data-action="increase">+</button>
-                </div>
-            </div>
-            <div class="cart-item-actions">
-                <button class="cart-item-remove" data-id="${item.id}">🗑️</button>
-            </div>
-        `;
-        
-        // Setup buttons for this item
-        const decreaseBtn = div.querySelector('[data-action="decrease"]');
-        const increaseBtn = div.querySelector('[data-action="increase"]');
-        const removeBtn = div.querySelector('.cart-item-remove');
-        
-        // Use arrow functions to keep "this" context
-        decreaseBtn.addEventListener('click', () => {
-            this.changeQuantity(item.id, -1);
-        });
-        
-        increaseBtn.addEventListener('click', () => {
-            this.changeQuantity(item.id, 1);
-        });
-        
-        removeBtn.addEventListener('click', () => {
-            this.removeItem(item.id);
-        });
-        
-        return div;
-    }
-    
-    // Update totals display
-    updateTotals() {
-        const totals = this.calculateTotals();
-        
-        const subtotalEl = document.getElementById('cartSubtotal');
-        const shippingEl = document.getElementById('cartShipping');
-        const totalEl = document.getElementById('cartTotal');
-        
-        subtotalEl.textContent = '$' + totals.subtotal.toFixed(2);
-        
-        if (totals.shipping === 0 && totals.subtotal > 0) {
-            shippingEl.textContent = 'FREE';
-        } else {
-            shippingEl.textContent = '$' + totals.shipping.toFixed(2);
-        }
-        
-        totalEl.textContent = '$' + totals.total.toFixed(2);
-    }
-    
-    // =========================================
-    // UI METHODS
-    // =========================================
-    
-    // Show notification
-    showNotification(productName) {
-        const notification = document.getElementById('cartNotification');
-        const text = document.getElementById('notificationText');
-        
-        text.textContent = productName + ' added to cart';
-        notification.classList.add('show');
-        
-        setTimeout(() => {
-            notification.classList.remove('show');
-        }, 3000);
-    }
-    
-    // Animate cart icon
-    animateCartIcon() {
-        const icon = document.getElementById('cartIcon');
-        icon.classList.add('bounce');
-        
-        setTimeout(() => {
-            icon.classList.remove('bounce');
-        }, 500);
-    }
-    
-    // Open cart modal
-    openModal() {
-        const modal = document.getElementById('cartModal');
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-    
-    // Close cart modal
-    closeModal() {
-        const modal = document.getElementById('cartModal');
-        modal.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-    
-    // Checkout
-    checkout() {
-        if (this.items.length === 0) {
-            alert('Your cart is empty!');
-            return;
-        }
-        
-        const totals = this.calculateTotals();
-        alert('Checkout - Total: $' + totals.total.toFixed(2) + '\n\nThis is a demo!');
-    }
-    
-    // =========================================
-    // SETUP METHODS
-    // =========================================
-    
-    // Setup all button event listeners
-    setupButtons() {
-        // Cart icon
-        const cartIcon = document.getElementById('cartIcon');
-        cartIcon.addEventListener('click', () => {
-            this.openModal();
-        });
-        
-        // Close button
-        const closeBtn = document.getElementById('cartClose');
-        closeBtn.addEventListener('click', () => {
-            this.closeModal();
-        });
-        
-        // Click outside to close
-        const modal = document.getElementById('cartModal');
-        modal.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                this.closeModal();
-            }
-        });
-        
-        // Clear cart button
-        const clearBtn = document.getElementById('cartClear');
-        clearBtn.addEventListener('click', () => {
-            this.clearAll();
-        });
-        
-        // Checkout button
-        const checkoutBtn = document.getElementById('cartCheckout');
-        checkoutBtn.addEventListener('click', () => {
-            this.checkout();
-        });
-        
-        // Add to cart buttons
-        const addButtons = document.querySelectorAll('.add-to-cart-btn');
-        
-        for (let i = 0; i < addButtons.length; i++) {
-            addButtons[i].addEventListener('click', (event) => {
-                const product = event.target.closest('.product');
-                const id = product.dataset.id;
-                const name = product.dataset.name;
-                const price = product.dataset.price;
-                
-                this.addItem(id, name, price);
-                
-                // Button feedback
-                const btn = addButtons[i];
-                btn.classList.add('added');
-                btn.innerHTML = '<span>✓</span><span>Added!</span>';
-                
-                setTimeout(() => {
-                    btn.classList.remove('added');
-                    btn.innerHTML = '<span>🛒</span><span>Add to Cart</span>';
-                }, 2000);
-            });
-        }
-        
-        // ESC key to close
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                this.closeModal();
-            }
-        });
-    }
+// =======================
+// DOM
+// =======================
+const productsGrid = document.getElementById("productsGrid");
+const cartItemsEl = document.getElementById("cartItems");
+const cartSummaryEl = document.getElementById("cartSummary");
+const checkoutBtn = document.getElementById("checkoutBtn");
+
+// Keep last fetched products here so we can add by id
+let currentProducts = [];
+
+// =======================
+// CART (localStorage)
+// =======================
+function getCart() {
+  try {
+    return JSON.parse(localStorage.getItem(CART_KEY)) || [];
+  } catch {
+    return [];
+  }
 }
 
-// =============================================
-// CREATE CART WHEN PAGE LOADS
-// =============================================
-document.addEventListener('DOMContentLoaded', () => {
-    // Create one cart instance for the whole site
-    window.myCart = new ShoppingCart();
+function saveCart(cart) {
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+}
+
+function addToCart(product, qty = 1) {
+  const cart = getCart();
+  const existing = cart.find((i) => i.product_id === product.product_id);
+
+  if (existing) {
+    existing.qty += qty;
+  } else {
+    cart.push({
+      product_id: product.product_id,
+      product_name: product.product_name,
+      listing_price: Number(product.listing_price),
+      qty
+    });
+  }
+
+  saveCart(cart);
+}
+
+function updateQty(product_id, newQty) {
+  let cart = getCart();
+  const item = cart.find((i) => i.product_id === product_id);
+  if (!item) return;
+
+  item.qty = newQty;
+
+  if (item.qty <= 0) {
+    cart = cart.filter((i) => i.product_id !== product_id);
+  }
+
+  saveCart(cart);
+}
+
+function clearCart() {
+  saveCart([]);
+}
+
+function getCartTotals() {
+  const cart = getCart();
+  const itemsCount = cart.reduce((sum, i) => sum + i.qty, 0);
+  const total = cart.reduce((sum, i) => sum + i.qty * i.listing_price, 0);
+  return { itemsCount, total };
+}
+
+// =======================
+// RENDER UI
+// =======================
+function renderProductCard(p) {
+  return `
+    <article class="card">
+      <h3>${p.product_name}</h3>
+      <p><strong>${Number(p.listing_price).toFixed(2)} kr</strong></p>
+      <button class="addToCartBtn" data-id="${p.product_id}">
+        Add to cart
+      </button>
+    </article>
+  `;
+}
+
+function renderProducts() {
+  if (!currentProducts.length) {
+    productsGrid.innerHTML = "<p>No products found.</p>";
+    return;
+  }
+  productsGrid.innerHTML = currentProducts.map(renderProductCard).join("");
+}
+
+function renderCart() {
+  const cart = getCart();
+
+  if (!cart.length) {
+    cartItemsEl.innerHTML = "<p>Your cart is empty.</p>";
+    cartSummaryEl.innerHTML = "";
+    return;
+  }
+
+  cartItemsEl.innerHTML = cart
+    .map(
+      (item) => `
+      <div class="cart-row" data-id="${item.product_id}">
+        <div>
+          <strong>${item.product_name}</strong><br />
+          <small>${item.listing_price} kr each</small>
+        </div>
+
+        <div>
+          <button class="minusBtn">-</button>
+          <span class="qty">${item.qty}</span>
+          <button class="plusBtn">+</button>
+        </div>
+
+        <div>
+          <strong>${(item.qty * item.listing_price).toFixed(2)} kr</strong>
+          <button class="removeBtn">Remove</button>
+        </div>
+      </div>
+    `
+    )
+    .join("");
+
+  const { itemsCount, total } = getCartTotals();
+  cartSummaryEl.innerHTML = `
+    <p>Items: <strong>${itemsCount}</strong></p>
+    <p>Total: <strong>${total.toFixed(2)} kr</strong></p>
+  `;
+}
+
+// =======================
+// API: LOAD PRODUCTS
+// =======================
+async function loadAllProducts() {
+  const res = await fetch(`${API_BASE}/products`);
+  if (!res.ok) {
+    productsGrid.innerHTML = `<p>Error loading products (${res.status})</p>`;
+    return;
+  }
+
+  currentProducts = await res.json();
+  renderProducts();
+}
+
+// =======================
+// EVENTS
+// =======================
+
+// Add to cart
+productsGrid.addEventListener("click", (e) => {
+  const btn = e.target.closest(".addToCartBtn");
+  if (!btn) return;
+
+  const id = Number(btn.dataset.id);
+  const product = currentProducts.find((p) => p.product_id === id);
+  if (!product) return;
+
+  addToCart(product, 1);
+  renderCart();
 });
+
+// Cart qty controls
+cartItemsEl.addEventListener("click", (e) => {
+  const row = e.target.closest(".cart-row");
+  if (!row) return;
+
+  const product_id = Number(row.dataset.id);
+  const cart = getCart();
+  const item = cart.find((i) => i.product_id === product_id);
+  if (!item) return;
+
+  if (e.target.closest(".plusBtn")) updateQty(product_id, item.qty + 1);
+  if (e.target.closest(".minusBtn")) updateQty(product_id, item.qty - 1);
+  if (e.target.closest(".removeBtn")) updateQty(product_id, 0);
+
+  renderCart();
+});
+
+// Checkout → create order
+checkoutBtn.addEventListener("click", async () => {
+  const cart = getCart();
+  if (!cart.length) return alert("Cart is empty!");
+
+  const { total } = getCartTotals();
+
+  // This payload depends on your backend order schema
+  const payload = {
+    customer_id: 1, // later: from logged-in user
+    total_price: total,
+    items: cart.map((i) => ({
+      product_id: i.product_id,
+      qty: i.qty,
+      price: i.listing_price
+    }))
+  };
+
+  // ✅ This requires that your backend has POST /orders
+  const res = await fetch(`${API_BASE}/orders`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    alert("Order failed: " + errText);
+    return;
+  }
+
+  const data = await res.json();
+
+  clearCart();
+  renderCart();
+  alert("Order created! ID: " + (data.order_id ?? "OK"));
+});
+
+// =======================
+// INIT
+// =======================
+(async function init() {
+  await loadAllProducts();
+  renderCart();
+})();
+const user = getCurrentUser();
+if (!user) return alert("You must login first!");
+
+/* const payload = {
+  customer_id: user.customer_id,
+  shipping_address_id: Number(addressSelect.value),
+  shipping_method_id: Number(shippingSelect.value),
+  total_price: total,
+  items: cart.map(i => ({
+    product_id: i.product_id,
+    qty: i.qty,
+    price: i.listing_price
+  }))
+}; */

@@ -4,76 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="CSS/sidebar.css">
 </head>
 <body>
-    <div id="toolbar">
-        <input id="searchInput" placeholder="Search Products...">
+<div class="layout">
+  <aside class="sidebar">
+    <h3 class="sidebar-title">Categories</h3>
+    <div id="categoriesSide" class="categories-list"></div>
+  </aside>
+
+  <main class="content">
+    <input id="email" placeholder="Email" />
+<button id="loginBtn">Login</button>
+<p id="loginStatus"></p>
+
+    <div id="addressSelect"></div>
+    <div id="shippingSelect"></div>
+    <div class="topbar">
+      <h2 id="pageTitle">All products</h2>
+
+      <div class="searchbar">
+        <input id="searchInput" type="text" placeholder="Search products..." />
         <button id="searchBtn">Search</button>
+        <button id="clearBtn" type="button">Clear</button>
+      </div>
     </div>
 
-    <div id="productsGrid" class="grid">
-    </div>
-    <script>
-      function renderProductCard(product) {
-        return `
-          <article class="card" data-id="${product.product_id}">
-            <h3>${product.product_name}</h3>
-            ${product.image_url ? `<img src="${product.image_url}" alt="${product.product_name}">` : ""}
-            ${product.product_description ? `<p>${product.product_description}</p>` : ""}
-            ${product.listing_price ? `<p><strong>$${product.listing_price} kr</strong></p>` : ""}
-            <button class="detailsBtn">Details</button>
-          </article>`;
-      }
+    <div id="productsGrid" class="grid"></div>
+    <div class="cart-panel">
+  <h3>Cart</h3>
+  <div id="cartItems"></div>
+  <div id="cartSummary"></div>
+  <button id="checkoutBtn">Checkout</button>
+</div>
+  </main>
+</div>
+    
 
-        const API_BASE = "http://localhost:3007";
-const grid = document.getElementById("productsGrid");
-
-async function loadProducts(search = "") {
-  const url = new URL(`${API_BASE}/products`);
-  if (search) url.searchParams.set("search", search);
-
-  const res = await fetch(url);
-  if (!res.ok) {
-    grid.innerHTML = `<p>Error loading products (${res.status})</p>`;
-    return;
-  }
-
-  const products = await res.json();
-
-  if (!products.length) {
-    grid.innerHTML = `<p>No products found.</p>`;
-    return;
-  }
-
-  grid.innerHTML = products.map(renderProductCard).join("");
-}
-
-loadProducts(); // initial load
-const searchInput = document.getElementById("searchInput");
-const searchBtn = document.getElementById("searchBtn");
-
-searchBtn.addEventListener("click", () => {
-  loadProducts(searchInput.value.trim());
-});
-
-searchInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") loadProducts(searchInput.value.trim());
-});
-grid.addEventListener("click", async (e) => {
-  const btn = e.target.closest(".detailsBtn");
-  if (!btn) return;
-
-  const card = e.target.closest(".card");
-  const id = card.dataset.id;
-
-  const res = await fetch(`${API_BASE}/products/${id}`);
-  const data = await res.json();
-
-  // NOTE: your getProductById does res.send(data) (usually returns an array with 1 item)
-  const product = Array.isArray(data) ? data[0] : data;
-
-  alert(`Product: ${product.product_name} (id: ${product.product_id})`);
-});
-    </script>
+    <script src="JS/product-card.js"></script>
+    <script src="JS/cart.js"></script>
+    <script src="JS/login.js"></script>
 </body>
 </html>
