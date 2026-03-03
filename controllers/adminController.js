@@ -226,26 +226,46 @@ exports.postProductById = async (req, res) => {
   }
 };
 // update product via put by product_id in route params
-exports.putProductById = async (req, res) => {
-  try {
-    const [data] = await pool.query(
-      `UPDATE products 
-      SET product_name = ?, product_code = ?, listing_price = ?, stock_quantity = ?, product_description = ? 
-      WHERE product_id = ?`,
-      [
-        req.body.product_name,
-        req.body.product_code,
-        req.body.listing_price,
-        req.body.stock_quantity,
-        req.body.product_description,
-        req.params.product_id,
-      ],
-    );
-    if (data.affectedRows === 0) {
-      return res.status(404).send("Product not found. ");
-    }
-    res.status(200).send(`Product ${req.params.product_id} updated. `);
-  } catch (err) {
-    res.status(500).send(err);
-  }
+exports.putProductById = (req, res) => {
+  connection.query(
+    `UPDATE products 
+    SET product_name = ?, 
+    product_code = ?, 
+    listing_price = ?, 
+    stock_quantity = ?, 
+    product_description = ? 
+    WHERE product_id = ?`,
+    [
+      req.body.product_name,
+      req.body.product_code,
+      req.body.listing_price,
+      req.body.stock_quantity,
+      req.body.product_description,
+      req.params.product_id,
+    ],
+    (err, data) => {
+      if (err) return res.status(500).send(err);
+      if (data.affectedRows === 0) {
+        return res.status(404).send("Product not found. ");
+      }
+      res.status(200).send(`Product ${req.params.product_id} updated. `);
+    },
+  );
 };
+/* 
+exports.mostPurchased = (req, res) => {
+  connection.query(
+    `SELECT 
+    product_id,
+    SUM(product_quantity) AS total_units_sold
+    FROM order_items
+    GROUP BY product_id
+    ORDER BY total_units_sold DESC
+    LIMIT 3;`,
+    (err, data) => {
+      if (err) return res.status(500).send(err);
+      res.status(200).send(data);
+    },
+  );
+};
+ */

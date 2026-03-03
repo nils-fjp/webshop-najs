@@ -303,8 +303,8 @@ CREATE TABLE `products` (
   `product_id` int NOT NULL AUTO_INCREMENT, 
   `product_name` varchar(45) DEFAULT NULL,
   `product_code` varchar(45) DEFAULT NULL,
-  `listing_price` decimal(10,2) NOT NULL DEFAULT 0.00,
-  `stock_quantity` int NOT NULL DEFAULT 0,
+  `listing_price` decimal(10,2) DEFAULT 0.00,
+  `stock_quantity` int DEFAULT 0,
   `product_description` mediumtext DEFAULT NULL,
   PRIMARY KEY (`product_id`),
   UNIQUE KEY `product_code_UNIQUE` (`product_code`)
