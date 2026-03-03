@@ -1,0 +1,148 @@
+# 2026-03-04-curl-db.txt
+
+curl -X GET http://localhost:3007/
+curl -X GET http://localhost:3007/products
+curl -X GET http://localhost:3007/products/1
+
+??  curl -X GET http://localhost:3007/orders/1 (+POST)
+
+curl -X GET http://localhost:3007/categories
+?? curl -X GET http://localhost:3007/categories/1
+curl -X GET http://localhost:3007/categories/Audio
+
+curl -X GET http://localhost:3007/admin
+curl -X GET http://localhost:3007/admin/products
+curl -X GET http://localhost:3007/admin/products/1
+curl -X GET http://localhost:3007/admin/orders -- annat format
+curl -X GET http://localhost:3007/admin/orders/1
+
+curl -X DELETE http://localhost:3007/admin/products/1
+
+curl -X GET http://localhost:3007/admin/orders \
+	-H "Content-Type: application/json" \
+	-d '{
+			"order_id": "1"
+		}'
+
+curl -X POST http://localhost:3007/orders \
+	-H "Content-Type: application/json" \
+	-d '{
+			"customer_id":1,
+			"shipping_address_id": 1,
+			"shipping_method_id": 2,
+			"order_items": [
+				{
+					"product_id": 1,
+					"product_quantity": 2
+				},
+				{
+					"product_id": 2,
+					"product_quantity": 1
+				}
+			]
+		}'
+
+curl -X POST http://localhost:3007/admin/products \
+	-H "Content-Type: application/json" \
+	-d '{
+			"product_name": "Example Widget 1",
+			"product_code": "WDG-001",
+			"listing_price": 26.99,
+			"stock_quantity": 197,
+			"product_description": "INSERT ny testprodukt #1 med POST"
+		}'
+
+curl -X POST http://localhost:3007/admin/products \
+	-H "Content-Type: application/json" \
+	-d '{
+			"product_name": "Example Widget",
+			"product_description": "INSERT ny testprodukt med POST"
+		}'
+
+curl -X PUT http://localhost:3007/admin/products \
+	-H "Content-Type: application/json" \
+	-d '{
+			"product_id": 22,
+			"product_name": "Example Widget 2",
+			"product_code": "WDG-002",
+			"listing_price": 39.99,
+			"stock_quantity": 420,
+			"product_description": "Full UPDATE av testprodukt med PUT"
+		}'
+
+curl -X PATCH http://localhost:3007/admin/products \
+	-H "Content-Type: application/json" \
+	-d '{
+			"product_id": 23,
+			"product_name": "Example Widget 3",
+			"product_code": "WDG-003",
+			"listing_price": 27.00,
+			"stock_quantity": 29,
+			"product_description": "Full UPDATE av testprodukt med PATCH"
+		}'
+
+
+curl -X PATCH http://localhost:3007/admin/products \
+	-H "Content-Type: application/json" \
+	-d '{
+			"product_id": 23,
+			"stock_quantity": 69,
+			"product_description": "Delvis UPDATE av testprodukt med PATCH"
+		}'
+
+curl -X DELETE http://localhost:3007/admin/products \
+	-H "Content-Type: application/json" \
+	-d '{
+			"product_id": 23
+		}'
+
+curl -X POST http://localhost:3007/admin/products/24 \
+	-H "Content-Type: application/json" \
+	-d '{
+			"product_description": "INSERT ny med route params och POST"
+		}'
+
+curl -X PUT http://localhost:3007/admin/products/24 \
+	-H "Content-Type: application/json" \
+	-d '{
+			"product_name": "Example Widget 4",
+			"product_code": "WDG-004",
+			"listing_price": 49.99,
+			"stock_quantity": 8,
+			"product_description": "Full UPDATE med route params och PUT"
+		}'
+
+curl -X PATCH http://localhost:3007/admin/products/24 \
+	-H "Content-Type: application/json" \
+	-d '{
+			"product_description": "Delvis UPDATE med route params och PATCH",
+			"stock_quantity": 1
+		}'
+
+curl -X DELETE http://localhost:3007/admin/products/24
+
+curl -X POST http://localhost:3007/orders \
+	-H "Content-Type: application/json" \
+	-d '{
+			"customer_id":1,
+			"shipping_address_id": 1,
+			"shipping_method_id": 2,
+			"order_items": [
+				{
+					"product_id": 1,
+					"product_quantity": 2
+				},
+				{
+					"product_id": 2,
+					"product_quantity": 1
+				}
+			]
+		}'
+
+curl -X GET http://localhost:3007/admin/orders/1
+
+curl -X GET http://localhost:3007/admin/orders \
+	-H "Content-Type: application/json" \
+	-d '{
+			"order_id": "1"
+		}'
