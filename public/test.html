@@ -48,7 +48,7 @@ async function loadProducts(search = "") {
   grid.innerHTML = products.map(renderProductCard).join("");
 }
 
-loadProducts(); // carga inicial
+loadProducts(); // initial load
 const searchInput = document.getElementById("searchInput");
 const searchBtn = document.getElementById("searchBtn");
 
@@ -69,7 +69,7 @@ grid.addEventListener("click", async (e) => {
   const res = await fetch(`${API_BASE}/products/${id}`);
   const data = await res.json();
 
-  // OJO: tu getProductById hace res.send(data) (normalmente devuelve array con 1 item)
+  // NOTE: your getProductById does res.send(data) (usually returns an array with 1 item)
   const product = Array.isArray(data) ? data[0] : data;
 
   alert(`Product: ${product.product_name} (id: ${product.product_id})`);
