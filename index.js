@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 3007;
 
 const productRoutes = require("./routes/productRoutes");
 const adminRoutes = require("./routes/adminRoutes");
-const userRoutes = require("./routes/userRoutes");
+const orderRoutes = require("./routes/orderRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 
 app.use(cors());
@@ -19,7 +19,7 @@ app.get("/", (req, res) => {
 app.use("/products", productRoutes);
 app.use("/admin", adminRoutes);
 app.use("/categories", categoryRoutes);
-app.use("/", userRoutes);
+app.use("/orders", orderRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

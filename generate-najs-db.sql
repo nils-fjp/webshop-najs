@@ -144,7 +144,7 @@ CREATE TABLE `order_items` (
   `order_id` int NOT NULL,
   `product_id` int NOT NULL,
   `product_quantity` int NOT NULL,
-  `item_price` decimal(10,2) NOT NULL,
+  `item_price` decimal(10,2),
   PRIMARY KEY (`order_item_id`,`order_id`),
   KEY `fk_product_idx` (`product_id`),
   KEY `fk_order_idx` (`order_id`),
@@ -173,7 +173,7 @@ CREATE TABLE `orders` (
   `customer_id` int NOT NULL,
   `shipping_address_id` int NOT NULL,
   `shipping_method_id` int NOT NULL,
-  `total_price` decimal(10,2) NOT NULL,
+  `total_price` decimal(10,2),
   `order_date` datetime DEFAULT CURRENT_TIMESTAMP,
   `order_status` enum('created','paid','shipped','delivered','cancelled') NOT NULL,
 
