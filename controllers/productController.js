@@ -1,6 +1,6 @@
-const connection = require("../config/db");
+const pool = require("../config/db");
 
-exports.getAllProducts = (req, res) => {
+exports.getAllProducts = async (req, res) => {
   let sql = "SELECT * FROM products WHERE 1=1";
   const params = [];
 
@@ -9,19 +9,22 @@ exports.getAllProducts = (req, res) => {
     params.push(`%${req.query.search}%`);
   }
 
-  connection.query(sql, params, (err, data) => {
-    if (err) return res.status(500).send(err);
-    res.json(data);
-  });
+  try {
+    const [data] = await pool.query(sql, params);
+    res.status(200).json(data);
+  } catch (err) {
+    res.status(500).send(err);
+  }
 };
 
-exports.getProductById = (req, res) => {
-  connection.query(
-    `SELECT * FROM products WHERE product_id = ?`,
-    [req.params.product_id],
-    (err, data) => {
-      if (err) return res.status(500).send(err);
-      res.status(200).send(data);
-    },
-  );
+exports.getProductById = async (req, res) => {
+  try {
+    const [data] = await pool.query(
+      `SELECT * FROM products WHERE product_id = ?`,
+      [req.params.product_id],
+    );
+    res.status(200).send(data);
+  } catch (err) {
+    res.status(500).send(err);
+  }
 };
