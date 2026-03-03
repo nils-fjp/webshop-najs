@@ -37,8 +37,117 @@
           </button></label
         >
       </form>
+      <hr />
+      <h2>Skapa order</h2>
+      <!-- <form id="orderForm">
+        <label>
+          customer_id:
+          <input id="Customer_id" type="text" name="Customer_id" />
+          product_id:
+          <input id="product_id" type="text" name="product_id" />
+          product_quantity:
+          <input id="product_quantity" type="text" name="product_quantity" />
+          <button id="submitBtn" type="submit">Post</button>
+        </label>
+      </form> -->
+
+      <form id="orderForm" onsubmit="submitOrder(event)">
+        <label
+          >Customer ID:
+          <input id="customer-id" type="text" name="customerId" required />
+        </label>
+
+        <div id="productsContainer">
+          <div
+            class="product-row"
+            style="display: flex; gap: 10px; margin: 8px 0"
+          >
+            <label
+              >Product ID: <input type="text" name="product_id" required
+            /></label>
+            <label
+              >Quantity:
+              <input type="number" name="product_quantity" min="1" required
+            /></label>
+            <button
+              type="button"
+              onclick="removeProduct(this)"
+              style="color: red"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+
+        <button type="button" onclick="addProduct()" style="margin-right: 10px">
+          + Add Product
+        </button>
+        <button type="submit" id="submitBtn">Post</button>
+      </form>
+
+      <script>
+        function addProduct() {
+          const container = document.getElementById("productsContainer");
+          const row = document.createElement("div");
+          row.className = "product-row";
+          row.style = "display:flex; gap:10px; margin:8px 0;";
+          row.innerHTML = `
+      <label>Product ID: <input type="text" name="product_id" required /></label>
+      <label>Quantity: <input type="number" name="product_quantity" min="1" required /></label>
+      <button type="button" onclick="removeProduct(this)" style="color:red;">✕</button>
+    `;
+          container.appendChild(row);
+        }
+
+        function removeProduct(btn) {
+          const rows = document.querySelectorAll(".product-row");
+          if (rows.length > 1) {
+            btn.parentElement.remove();
+          } else {
+            alert("At least one product is required.");
+          }
+        }
+
+        function submitOrder(event) {
+          event.preventDefault(); // blocks default form submission
+
+          const customerId = document.getElementById("customer_id").value;
+          const rows = document.querySelectorAll(".product-row");
+          const orderItems = [];
+
+          rows.forEach((row) => {
+            const inputs = row.querySelectorAll("input");
+            order_items.push({
+              product_id: inputs[0].value,
+              product_quantity: inputs[1].value,
+            });
+          });
+
+          const order = {
+            customer_id: customerId,
+            products: products,
+          };
+
+          console.log("Submitting order:", order);
+
+          // Replace with your actual endpoint
+          fetch("/orders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(order),
+          })
+            .then((res) => res.json())
+            .then((data) => console.log("Success:", data))
+            .catch((err) => console.error("Error:", err));
+        }
+      </script>
+
+      <!-- //////////////////////////////////////////////////////////////// -->
+
       <h3>Data laddad från backend:</h3>
       <table id="table"></table>
+
+      <div></div>
     </main>
     <footer>
       <p>
@@ -70,77 +179,79 @@
         ).then((res) => res.json());
         renderTable(data);
       });
+
+      submitBtn.addEventListener("click", (event) => {});
       // Används/funkar ej
       /* searchBtn.addEventListener("submit", async (event???) => {
-               data = await fetch(
-                 `http://localhost:${port.value}/products?search=${searchField.value}`,
-               ).then((res) => res.json());
-               table.innerHTML =
-                 `<tr>${Object.keys(data[0]).map((name) => `<td><b>${name}</b></td>`)
-                   .join``}</tr>` +
-                 data.map(
-                   (row) =>
-                     `<tr>${Object.values(row).map((col) => `<td>${col}</td>`)
-                       .join``}</tr>`,
-                 ).join``;
-             }); */
+                     data = await fetch(
+                       `http://localhost:${port.value}/products?search=${searchField.value}`,
+                     ).then((res) => res.json());
+                     table.innerHTML =
+                       `<tr>${Object.keys(data[0]).map((name) => `<td><b>${name}</b></td>`)
+                         .join``}</tr>` +
+                       data.map(
+                         (row) =>
+                           `<tr>${Object.values(row).map((col) => `<td>${col}</td>`)
+                             .join``}</tr>`,
+                       ).join``;
+                   }); */
 
       /* console.log(searchField.value);
-             console.log(port.value);
-             console.log(endpoint.value);
-             console.log(data); */
+                   console.log(port.value);
+                   console.log(endpoint.value);
+                   console.log(data); */
 
       /* searchForm.addEventListener("submit", (event) => {
-             if (searchField.value.length < 5) {
-               // IMPORTANT: Stop the form from actually submitting/reloading the page
-               event.preventDefault();
-               alert("Please fix the errors before submitting!");
-             } else {
-               alert("Form submitted successfully!");
-             }
-           }); */
+                   if (searchField.value.length < 5) {
+                     // IMPORTANT: Stop the form from actually submitting/reloading the page
+                     event.preventDefault();
+                     alert("Please fix the errors before submitting!");
+                   } else {
+                     alert("Form submitted successfully!");
+                   }
+                 }); */
 
       /*
-                 const renderTable = (data) => {
-                   table.innerHTML =
-                     `<tr>${Object.keys(data[0]).map((name) => `<td><b>${name}</b></td>`)
-                       .join``}</tr>` +
-                     data.map(
-                       (row) =>
-                         `<tr>${Object.values(row).map((col) => `<td>${col}</td>`)
-                           .join``}</tr>`,
-                     ).join``;
-                 };
-                 if (searchField.value.length > 0) {
-                   data = await fetch(
-                     `http://localhost:${port.value}/${endpoint.value}?search=${searchField.value}`,
-                   ).then((res) => res.json());
-                 }
-                   else {
-                     data = await fetch(
-                       `http://localhost:${port.value}/${endpoint.value}`,
-                     ).then((res) => res.json());
-                 }
-                 getBtn.addEventListener("click", async () => {
-                   renderTable(data);
-                 });
-                 searchField.addEventListener("input", async () => {
-                   renderTable(data);
-                 });
+                       const renderTable = (data) => {
+                         table.innerHTML =
+                           `<tr>${Object.keys(data[0]).map((name) => `<td><b>${name}</b></td>`)
+                             .join``}</tr>` +
+                           data.map(
+                             (row) =>
+                               `<tr>${Object.values(row).map((col) => `<td>${col}</td>`)
+                                 .join``}</tr>`,
+                           ).join``;
+                       };
+                       if (searchField.value.length > 0) {
+                         data = await fetch(
+                           `http://localhost:${port.value}/${endpoint.value}?search=${searchField.value}`,
+                         ).then((res) => res.json());
+                       }
+                         else {
+                           data = await fetch(
+                             `http://localhost:${port.value}/${endpoint.value}`,
+                           ).then((res) => res.json());
+                       }
+                       getBtn.addEventListener("click", async () => {
+                         renderTable(data);
+                       });
+                       searchField.addEventListener("input", async () => {
+                         renderTable(data);
+                       });
 
-           /*       getBtn.addEventListener("click", async () => {
-                   data = await fetch(
-                     `http://localhost:${port.value}/${endpoint.value}`,
-                   ).then((res) => res.json());
-                   renderTable(data);
-                 });
-                 searchField.addEventListener("input", async () => {
-                   data = await fetch(
-                     `http://localhost:${port.value}/${endpoint.value}?search=${searchField.value}`,
-                   ).then((res) => res.json());
-                   renderTable(data);
-                 });
-            */
+                 /*       getBtn.addEventListener("click", async () => {
+                         data = await fetch(
+                           `http://localhost:${port.value}/${endpoint.value}`,
+                         ).then((res) => res.json());
+                         renderTable(data);
+                       });
+                       searchField.addEventListener("input", async () => {
+                         data = await fetch(
+                           `http://localhost:${port.value}/${endpoint.value}?search=${searchField.value}`,
+                         ).then((res) => res.json());
+                         renderTable(data);
+                       });
+                  */
     </script>
   </body>
 </html>

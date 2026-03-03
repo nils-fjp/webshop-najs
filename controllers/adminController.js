@@ -220,7 +220,11 @@ exports.postProductById = (req, res) => {
 exports.putProductById = (req, res) => {
   connection.query(
     `UPDATE products 
-    SET product_name = ?, product_code = ?, listing_price = ?, stock_quantity = ?, product_description = ? 
+    SET product_name = ?, 
+    product_code = ?, 
+    listing_price = ?, 
+    stock_quantity = ?, 
+    product_description = ? 
     WHERE product_id = ?`,
     [
       req.body.product_name,
@@ -239,3 +243,20 @@ exports.putProductById = (req, res) => {
     },
   );
 };
+/* 
+exports.mostPurchased = (req, res) => {
+  connection.query(
+    `SELECT 
+    product_id,
+    SUM(product_quantity) AS total_units_sold
+    FROM order_items
+    GROUP BY product_id
+    ORDER BY total_units_sold DESC
+    LIMIT 3;`,
+    (err, data) => {
+      if (err) return res.status(500).send(err);
+      res.status(200).send(data);
+    },
+  );
+};
+ */
