@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="toolbar">
+        <input id="searchInput" placeholder="Search Products...">
+        <button id="searchBtn">Search</button>
+    </div>
+
+    <div id="productGrid" class="grid">
+    </div>
+    <script>
+        const API_BASE = "http://localhost:3007";
+const grid = document.getElementById("productsGrid");
+
+async function loadProducts(search = "") {
+  const url = new URL(`${API_BASE}/products`);
+  if (search) url.searchParams.set("search", search);
+
+  const res = await fetch(url);
+  if (!res.ok) {
+    grid.innerHTML = `<p>Error loading products (${res.status})</p>`;
+    return;
+  }
+
+  const products = await res.json();
+
+  if (!products.length) {
+    grid.innerHTML = `<p>No products found.</p>`;
+    return;
+  }
+
+  grid.innerHTML = products.map(renderProductCard).join("");
+}
+
+loadProducts(); // carga inicial
+const searchInput = document.getElementById("searchInput");
+const searchBtn = document.getElementById("searchBtn");
+
+searchBtn.addEventListener("click", () => {
+  loadProducts(searchInput.value.trim());
+});
+
+searchInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") loadProducts(searchInput.value.trim());
+});
+grid.addEventListener("click", async (e) => {
+  const btn = e.target.closest(".detailsBtn");
+  if (!btn) return;
+
+  const card = e.target.closest(".card");
+  const id = card.dataset.id;
+
+  const res = await fetch(`${API_BASE}/products/${id}`);
+  const data = await res.json();
+
+  // OJO: tu getProductById hace res.send(data) (normalmente devuelve array con 1 item)
+  const product = Array.isArray(data) ? data[0] : data;
+
+  alert(`Product: ${product.product_name} (id: ${product.product_id})`);
+});
+    </script>
+</body>
+</html>
