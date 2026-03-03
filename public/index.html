@@ -54,7 +54,27 @@
       <form id="orderForm" onsubmit="submitOrder(event)">
         <label
           >Customer ID:
-          <input id="customer-id" type="text" name="customerId" required />
+          <input id="customer_id" type="number" name="customer_id" required />
+        </label>
+
+        <label
+          >Shipping Address ID:
+          <input
+            id="shipping_address_id"
+            type="number"
+            name="shipping_address_id"
+            required
+          />
+        </label>
+
+        <label
+          >Shipping Method ID:
+          <input
+            id="shipping_method_id"
+            type="number"
+            name="shipping_method_id"
+            required
+          />
         </label>
 
         <div id="productsContainer">
@@ -63,12 +83,13 @@
             style="display: flex; gap: 10px; margin: 8px 0"
           >
             <label
-              >Product ID: <input type="text" name="product_id" required
-            /></label>
+              >Product ID:
+              <input type="number" name="product_id" required />
+            </label>
             <label
               >Quantity:
-              <input type="number" name="product_quantity" min="1" required
-            /></label>
+              <input type="number" name="product_quantity" min="1" required />
+            </label>
             <button
               type="button"
               onclick="removeProduct(this)"
@@ -79,9 +100,7 @@
           </div>
         </div>
 
-        <button type="button" onclick="addProduct()" style="margin-right: 10px">
-          + Add Product
-        </button>
+        <button type="button" onclick="addProduct()">+ Add Product</button>
         <button type="submit" id="submitBtn">Post</button>
       </form>
 
@@ -92,7 +111,7 @@
           row.className = "product-row";
           row.style = "display:flex; gap:10px; margin:8px 0;";
           row.innerHTML = `
-      <label>Product ID: <input type="text" name="product_id" required /></label>
+      <label>Product ID: <input type="number" name="product_id" required /></label>
       <label>Quantity: <input type="number" name="product_quantity" min="1" required /></label>
       <button type="button" onclick="removeProduct(this)" style="color:red;">✕</button>
     `;
@@ -107,31 +126,47 @@
             alert("At least one product is required.");
           }
         }
+        /* ////////////////////////////////////////////////////////////////() */
 
-        function submitOrder(event) {
-          event.preventDefault(); // blocks default form submission
+        /* ////////////////////////////////////////////////////////////////() */
+        submitBtn.addEventListener("click", (event) => {
+          event.preventDefault();
 
-          const customerId = document.getElementById("customer_id").value;
+          // Hämtar de tre huvud-fälten
+          const customer_id = parseInt(
+            document.getElementById("customer_id").value,
+          );
+          const shipping_address_id = parseInt(
+            document.getElementById("shipping_address_id").value,
+          );
+          const shipping_method_id = parseInt(
+            document.getElementById("shipping_method_id").value,
+          );
+
+          // Samlar ihop alla produktrader till order_items
           const rows = document.querySelectorAll(".product-row");
-          const orderItems = [];
+          const order_items = [];
 
           rows.forEach((row) => {
             const inputs = row.querySelectorAll("input");
             order_items.push({
-              product_id: inputs[0].value,
-              product_quantity: inputs[1].value,
+              product_id: parseInt(inputs[0].value),
+              product_quantity: parseInt(inputs[1].value),
             });
           });
 
+          // Bygger upp JSON-objektet
           const order = {
-            customer_id: customerId,
-            products: products,
+            customer_id: customer_id,
+            shipping_address_id: shipping_address_id,
+            shipping_method_id: shipping_method_id,
+            order_items: order_items,
           };
 
           console.log("Submitting order:", order);
 
-          // Replace with your actual endpoint
-          fetch("/orders", {
+          // Använder port och endpoint från sidan, precis som GET-anropen
+          fetch(`http://localhost:${port.value}/${endpoint.value}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(order),
@@ -139,7 +174,7 @@
             .then((res) => res.json())
             .then((data) => console.log("Success:", data))
             .catch((err) => console.error("Error:", err));
-        }
+        });
       </script>
 
       <!-- //////////////////////////////////////////////////////////////// -->
