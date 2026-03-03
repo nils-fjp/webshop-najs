@@ -1,134 +1,236 @@
-const API_BASE = "http://localhost:3007";
+// product-card.js (categorías + search + add to cart)
+// Requiere: #categoriesSide, #productsGrid, #pageTitle, #searchInput, #searchBtn, #clearBtn
 
-const categoriesSide = document.getElementById("categoriesSide");
-const grid = document.getElementById("productsGrid");
-const pageTitle = document.getElementById("pageTitle");
+(function () {
+  window.APP = window.APP || {
+    API_URL: "http://localhost:3007",
+    CART_KEY: "cart",
+    CURRENT_USER_KEY: "currentUser"
+  };
 
-const searchInput = document.getElementById("searchInput");
-const searchBtn = document.getElementById("searchBtn");
-const clearBtn = document.getElementById("clearBtn");
+  const categoriesSide = document.getElementById("categoriesSide");
+  const grid = document.getElementById("productsGrid");
+  const pageTitle = document.getElementById("pageTitle");
 
-// Estado de filtros
-let activeCategoryName = ""; // "" = All
-let searchTerm = "";
+  const searchInput = document.getElementById("searchInput");
+  const searchBtn = document.getElementById("searchBtn");
+  const clearBtn = document.getElementById("clearBtn");
 
-// 1) Card (usa tus columnas reales)
-function renderProductCard(p) {
-  return `
-    <article class="card">
-      <h3>${p.product_name ?? "Unnamed"}</h3>
-      <p><strong>${Number(p.listing_price ?? 0).toFixed(2)} kr</strong></p>
-      ${p.product_description ? `<p>${p.product_description}</p>` : ""}
-      <small>Stock: ${p.stock_quantity ?? 0}</small>
-    </article>
-  `;
-}
+  // Si falta algo crítico, no petamos todo
+  if (!categoriesSide || !grid || !pageTitle) return;
 
-// 2) Render categoría
-function renderCategoryItem(name, isActive = false) {
-  const label = name || "All";
-  return `
-    <button class="catItem ${isActive ? "active" : ""}" data-name="${name}">
-      <span>${label}</span>
-      <span>›</span>
-    </button>
-  `;
-}
+  let activeCategoryName = ""; // "" = All
+  let searchTerm = "";
 
-// 3) Cargar categorías sidebar
-async function loadCategoriesSidebar() {
-  const res = await fetch(`${API_BASE}/categories`);
-  if (!res.ok) {
-    categoriesSide.innerHTML = `<p>Error loading categories</p>`;
-    return;
+  // ---- CART helpers (simple) ----
+  function getCart() {
+    try {
+      return JSON.parse(localStorage.getItem(window.APP.CART_KEY)) || [];
+    } catch {
+      return [];
+    }
   }
 
-  const categories = await res.json();
+  function saveCart(cart) {
+    localStorage.setItem(window.APP.CART_KEY, JSON.stringify(cart));
+  }
 
-  categoriesSide.innerHTML =
-    renderCategoryItem("", true) +
-    categories.map(c => renderCategoryItem(c.category_name)).join("");
-}
+  function addToCart(product) {
+    const cart = getCart();
+    const existing = cart.find((i) => i.product_id === product.product_id);
 
-// 4) Esta es la función MÁS importante: recarga según filtros
-async function reloadProducts() {
-  // Título
-  pageTitle.textContent = activeCategoryName || "All products";
+    if (existing) existing.qty += 1;
+    else {
+      cart.push({
+        product_id: product.product_id,
+        product_name: product.product_name,
+        listing_price: Number(product.listing_price || 0),
+        qty: 1
+      });
+    }
 
-  let products = [];
+    saveCart(cart);
+    alert("Added to cart!");
+  }
 
-  if (!activeCategoryName) {
-    // ✅ All: usamos backend search real: /products?search=
-    const url = new URL(`${API_BASE}/products`);
-    if (searchTerm) url.searchParams.set("search", searchTerm);
+  // ---- UI ----
+  function renderProductCard(p) {
+    return `
+      <article class="card">
+        <h3>${p.product_name ?? "Unnamed"}</h3>
+        <p><strong>${Number(p.listing_price ?? 0).toFixed(2)} kr</strong></p>
+        ${p.product_description ? `<p>${p.product_description}</p>` : ""}
+        <small>Stock: ${p.stock_quantity ?? 0}</small><br/>
+        <button class="addBtn" data-id="${p.product_id}">Add to cart</button>
+      </article>
+    `;
+  }
 
-    const res = await fetch(url);
+  function renderCategoryItem(name, isActive = false) {
+    const label = name || "All";
+    return `
+      <button class="catItem ${isActive ? "active" : ""}" data-name="${name}">
+        <span>${label}</span>
+        <span>›</span>
+      </button>
+    `;
+  }
+
+  async function loadCategoriesSidebar() {
+    const res = await fetch(`${window.APP.API_URL}/categories`);
     if (!res.ok) {
-      grid.innerHTML = `<p>Error loading products (${res.status})</p>`;
+      categoriesSide.innerHTML = `<p>Error loading categories</p>`;
       return;
     }
-    products = await res.json();
-  } else {
-    // ✅ Category: tu endpoint actual NO soporta ?search (todavía)
-    // Entonces hacemos: 1) traer productos de esa categoría 2) filtrar en frontend
-    const url = `${API_BASE}/categories/${encodeURIComponent(activeCategoryName)}`;
-    const res = await fetch(url);
 
-    if (!res.ok) {
-      grid.innerHTML = `<p>Error loading category products (${res.status})</p>`;
+    const categories = await res.json();
+    categoriesSide.innerHTML =
+      renderCategoryItem("", true) +
+      categories.map((c) => renderCategoryItem(c.category_name)).join("");
+  }
+
+  async function reloadProducts() {
+    pageTitle.textContent = activeCategoryName || "All products";
+
+    let products = [];
+
+    if (!activeCategoryName) {
+      // All products (con search en backend)
+      const url = new URL(`${window.APP.API_URL}/products`);
+      if (searchTerm) url.searchParams.set("search", searchTerm);
+
+      const res = await fetch(url);
+      if (!res.ok) {
+        grid.innerHTML = `<p>Error loading products (${res.status})</p>`;
+        return;
+      }
+      products = await res.json();
+    } else {
+      // Products por categoría (tu endpoint actual)
+      const url = `${window.APP.API_URL}/categories/${encodeURIComponent(activeCategoryName)}`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        grid.innerHTML = `<p>Error loading category products (${res.status})</p>`;
+        return;
+      }
+
+      products = await res.json();
+
+      // search simple en frontend
+      if (searchTerm) {
+        const s = searchTerm.toLowerCase();
+        products = products.filter((p) =>
+          (p.product_name ?? "").toLowerCase().includes(s)
+        );
+      }
+    }
+
+    if (!products.length) {
+      grid.innerHTML = `<p>No products found.</p>`;
       return;
     }
 
-    products = await res.json();
+    grid.innerHTML = products.map(renderProductCard).join("");
+  }
 
-    if (searchTerm) {
-      const s = searchTerm.toLowerCase();
-      products = products.filter(p =>
-        (p.product_name ?? "").toLowerCase().includes(s)
-      );
+  // ---- Events ----
+  categoriesSide.addEventListener("click", (e) => {
+    const btn = e.target.closest(".catItem");
+    if (!btn) return;
+
+    document.querySelectorAll(".catItem").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    activeCategoryName = btn.dataset.name || "";
+    reloadProducts();
+  });
+
+  function runSearch() {
+    searchTerm = (searchInput?.value || "").trim();
+    reloadProducts();
+  }
+
+  searchBtn?.addEventListener("click", runSearch);
+  searchInput?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") runSearch();
+  });
+
+  clearBtn?.addEventListener("click", () => {
+    if (searchInput) searchInput.value = "";
+    searchTerm = "";
+    reloadProducts();
+  });
+
+  grid.addEventListener("click", (e) => {
+    const btn = e.target.closest(".addBtn");
+    if (!btn) return;
+
+    const id = Number(btn.dataset.id);
+
+    // pillamos el producto desde el HTML renderizado (simple: buscamos el nombre/precio del DOM NO)
+    // Mejor: volver a pedirlo (pero es más lento). Aquí hacemos simple: guardamos un mapa rápido.
+    // Solución simple: añadimos data attributes mínimos en el botón:
+    // Pero para no complicar: hacemos fetch del producto por id si tienes endpoint.
+    // Como no sabemos si existe /products/:id, hacemos método básico:
+    // -> Guardar en variable global los últimos products usados:
+  });
+
+  // Para que el add funcione sin endpoint extra, guardamos los últimos productos pintados:
+  let lastRenderedProducts = [];
+  const originalReload = reloadProducts;
+  reloadProducts = async function () {
+    await originalReload();
+    // reconstruimos lastRenderedProducts con una llamada extra NO. Mejor: setear antes de pintar.
+  };
+
+  // Reescribimos ligeramente: interceptamos el render y guardamos
+  const _reloadProducts = reloadProducts;
+  reloadProducts = async function () {
+    pageTitle.textContent = activeCategoryName || "All products";
+
+    let products = [];
+
+    if (!activeCategoryName) {
+      const url = new URL(`${window.APP.API_URL}/products`);
+      if (searchTerm) url.searchParams.set("search", searchTerm);
+      const res = await fetch(url);
+      if (!res.ok) return (grid.innerHTML = `<p>Error loading products (${res.status})</p>`);
+      products = await res.json();
+    } else {
+      const url = `${window.APP.API_URL}/categories/${encodeURIComponent(activeCategoryName)}`;
+      const res = await fetch(url);
+      if (!res.ok) return (grid.innerHTML = `<p>Error loading category products (${res.status})</p>`);
+      products = await res.json();
+      if (searchTerm) {
+        const s = searchTerm.toLowerCase();
+        products = products.filter((p) => (p.product_name ?? "").toLowerCase().includes(s));
+      }
     }
-  }
 
-  // Pintar
-  if (!products.length) {
-    grid.innerHTML = `<p>No products found.</p>`;
-    return;
-  }
+    lastRenderedProducts = products;
 
-  grid.innerHTML = products.map(renderProductCard).join("");
-}
+    if (!products.length) {
+      grid.innerHTML = `<p>No products found.</p>`;
+      return;
+    }
 
-// 5) Click categoría
-categoriesSide.addEventListener("click", (e) => {
-  const btn = e.target.closest(".catItem");
-  if (!btn) return;
+    grid.innerHTML = products.map(renderProductCard).join("");
+  };
 
-  document.querySelectorAll(".catItem").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
+  grid.addEventListener("click", (e) => {
+    const btn = e.target.closest(".addBtn");
+    if (!btn) return;
 
-  activeCategoryName = btn.dataset.name; // "" => All
-  reloadProducts();
-});
+    const id = Number(btn.dataset.id);
+    const product = lastRenderedProducts.find((p) => Number(p.product_id) === id);
+    if (!product) return;
 
-// 6) Search handlers
-function runSearch() {
-  searchTerm = searchInput.value.trim();
-  reloadProducts();
-}
+    addToCart(product);
+  });
 
-searchBtn.addEventListener("click", runSearch);
-searchInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") runSearch();
-});
-
-clearBtn.addEventListener("click", () => {
-  searchInput.value = "";
-  searchTerm = "";
-  reloadProducts();
-});
-
-// init
-(async function init() {
-  await loadCategoriesSidebar();
-  await reloadProducts();
+  // ---- init ----
+  (async function init() {
+    await loadCategoriesSidebar();
+    await reloadProducts();
+  })();
 })();

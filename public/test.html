@@ -1,48 +1,409 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="CSS/sidebar.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Webshop</title>
+
+  <style>
+    :root{
+      --bg:#0f1115;
+      --panel:#151924;
+      --panel2:#111521;
+      --text:#e8e8ea;
+      --muted:#a6adbb;
+      --line:#2a3142;
+      --btn:#2f6fed;
+      --btn2:#1f2a44;
+      --ok:#22c55e;
+      --warn:#f59e0b;
+      --danger:#ef4444;
+      --radius:14px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: radial-gradient(1200px 800px at 30% 10%, #1a2450 0%, var(--bg) 55%);
+      color:var(--text);
+    }
+
+    header{
+      position: sticky;
+      top:0;
+      z-index:10;
+      backdrop-filter: blur(10px);
+      background: rgba(15,17,21,.65);
+      border-bottom: 1px solid rgba(42,49,66,.6);
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      max-width:1200px;
+      margin:0 auto;
+      padding:14px 16px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+    .brand .dot{
+      width:10px;height:10px;border-radius:50%;
+      background: var(--btn);
+      box-shadow: 0 0 0 4px rgba(47,111,237,.18);
+    }
+
+    .loginBox{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .loginBox input{
+      width:230px;
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background: rgba(21,25,36,.9);
+      color:var(--text);
+      outline:none;
+    }
+    .loginBox button{
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background: var(--btn2);
+      color:var(--text);
+      cursor:pointer;
+    }
+    .loginBox button.primary{
+      background: var(--btn);
+      border-color: rgba(47,111,237,.6);
+    }
+    #userInfo{
+      color: var(--muted);
+      font-size: 13px;
+      max-width:420px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .layout{
+      max-width:1200px;
+      margin:0 auto;
+      padding:16px;
+      display:grid;
+      grid-template-columns: 260px 1fr 360px;
+      gap:16px;
+    }
+
+    .panel{
+      background: rgba(21,25,36,.9);
+      border: 1px solid rgba(42,49,66,.8);
+      border-radius: var(--radius);
+      box-shadow: 0 12px 30px rgba(0,0,0,.25);
+    }
+
+    .panelHeader{
+      padding:14px 14px 10px 14px;
+      border-bottom: 1px solid rgba(42,49,66,.8);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .panelHeader h2{
+      margin:0;
+      font-size:14px;
+      color: var(--muted);
+      font-weight:600;
+      letter-spacing:.2px;
+      text-transform:uppercase;
+    }
+
+    /* Categories */
+    #categoriesSide{
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      max-height: calc(100vh - 180px);
+      overflow:auto;
+    }
+    .catItem{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(42,49,66,.8);
+      background: rgba(17,21,33,.55);
+      color: var(--text);
+      cursor:pointer;
+      transition: transform .05s ease, background .2s ease;
+    }
+    .catItem:hover{ background: rgba(31,42,68,.6); }
+    .catItem:active{ transform: translateY(1px); }
+    .catItem.active{
+      border-color: rgba(47,111,237,.7);
+      background: rgba(47,111,237,.15);
+    }
+
+    /* Main */
+    .mainTop{
+      padding:14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      border-bottom:1px solid rgba(42,49,66,.8);
+    }
+
+    #pageTitle{
+      margin:0;
+      font-size:18px;
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+
+    .searchRow{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .searchRow input{
+      width:280px;
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background: rgba(17,21,33,.7);
+      color:var(--text);
+      outline:none;
+    }
+    .searchRow button{
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background: var(--btn2);
+      color:var(--text);
+      cursor:pointer;
+    }
+    .searchRow button.primary{
+      background: var(--btn);
+      border-color: rgba(47,111,237,.6);
+    }
+
+    #productsGrid{
+      padding:14px;
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap:12px;
+    }
+
+    .card{
+      border-radius: 14px;
+      border:1px solid rgba(42,49,66,.8);
+      background: rgba(17,21,33,.6);
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height:120px;
+    }
+    .card h3{ margin:0; font-size:15px; }
+    .card p{ margin:0; color: var(--muted); font-size:13px; line-height:1.35; }
+    .card small{ color: var(--muted); }
+    .card button{
+      margin-top:auto;
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid rgba(42,49,66,.8);
+      background: rgba(47,111,237,.18);
+      color: var(--text);
+      cursor:pointer;
+    }
+
+    /* Cart */
+    .cartBody{ padding:14px; display:flex; flex-direction:column; gap:12px; }
+    .cartBody label{
+      font-size:12px;
+      color: var(--muted);
+      display:block;
+      margin-bottom:6px;
+    }
+    .cartBody select{
+      width:100%;
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background: rgba(17,21,33,.7);
+      color: var(--text);
+      outline:none;
+    }
+    #cartItems{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      max-height: 330px;
+      overflow:auto;
+      padding-right:6px;
+    }
+    .cart-row{
+      display:grid;
+      grid-template-columns: 1fr auto auto;
+      gap:10px;
+      align-items:center;
+      border:1px solid rgba(42,49,66,.8);
+      background: rgba(17,21,33,.55);
+      padding:10px;
+      border-radius:12px;
+    }
+    .cart-row .qtyBox{
+      display:flex; gap:6px; align-items:center;
+      border:1px solid rgba(42,49,66,.8);
+      background: rgba(15,17,21,.65);
+      border-radius:10px;
+      padding:6px;
+    }
+    .cart-row button{
+      width:30px;height:30px;border-radius:8px;
+      border:1px solid rgba(42,49,66,.8);
+      background: rgba(31,42,68,.65);
+      color:var(--text);
+      cursor:pointer;
+    }
+    .cart-row .removeBtn{
+      width:auto;
+      padding:6px 10px;
+      background: rgba(239,68,68,.15);
+      border-color: rgba(239,68,68,.35);
+    }
+    #cartSummary{
+      border-top:1px solid rgba(42,49,66,.8);
+      padding-top:10px;
+      color: var(--muted);
+      font-size:13px;
+    }
+    #checkoutBtn{
+      padding:12px 12px;
+      border-radius:12px;
+      border:1px solid rgba(47,111,237,.6);
+      background: var(--btn);
+      color: var(--text);
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    @media (max-width: 1100px){
+      .layout{ grid-template-columns: 240px 1fr; }
+      .cartPanel{ grid-column: 1 / -1; }
+      #productsGrid{ grid-template-columns: repeat(3, minmax(0,1fr)); }
+    }
+    @media (max-width: 820px){
+      .layout{ grid-template-columns: 1fr; }
+      #productsGrid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .loginBox input{ width: 100%; }
+    }
+  </style>
 </head>
+
 <body>
-<div class="layout">
-  <aside class="sidebar">
-    <h3 class="sidebar-title">Categories</h3>
-    <div id="categoriesSide" class="categories-list"></div>
-  </aside>
-
-  <main class="content">
-    <input id="email" placeholder="Email" />
-<button id="loginBtn">Login</button>
-<p id="loginStatus"></p>
-
-    <div id="addressSelect"></div>
-    <div id="shippingSelect"></div>
+  <header>
     <div class="topbar">
-      <h2 id="pageTitle">All products</h2>
+      <div class="brand">
+        <span class="dot"></span>
+        <span>webshop-najs</span>
+      </div>
 
-      <div class="searchbar">
-        <input id="searchInput" type="text" placeholder="Search products..." />
-        <button id="searchBtn">Search</button>
-        <button id="clearBtn" type="button">Clear</button>
+      <div class="loginBox">
+        <input id="emailInput" type="email" placeholder="alice.nyberg@example.com" autocomplete="email" />
+        <button id="loginBtn" class="primary">Login</button>
+        <button id="logoutBtn">Logout</button>
+        <span id="userInfo">Not logged in</span>
       </div>
     </div>
+  </header>
 
-    <div id="productsGrid" class="grid"></div>
-    <div class="cart-panel">
-  <h3>Cart</h3>
-  <div id="cartItems"></div>
-  <div id="cartSummary"></div>
-  <button id="checkoutBtn">Checkout</button>
-</div>
+  <main class="layout">
+    <!-- Categories -->
+    <section class="panel">
+      <div class="panelHeader">
+        <h2>Categories</h2>
+      </div>
+      <div id="categoriesSide"></div>
+    </section>
+
+    <!-- Products -->
+    <section class="panel">
+      <div class="mainTop">
+        <h1 id="pageTitle">All products</h1>
+
+        <div class="searchRow">
+          <input id="searchInput" type="text" placeholder="Search products..." />
+          <button id="searchBtn" class="primary">Search</button>
+          <button id="clearBtn">Clear</button>
+        </div>
+      </div>
+
+      <div id="productsGrid"></div>
+    </section>
+
+    <!-- Cart + Checkout -->
+    <section class="panel cartPanel">
+      <div class="panelHeader">
+        <h2>Cart & Checkout</h2>
+      </div>
+
+      <div class="cartBody">
+        <div>
+          <label for="addressSelect">Shipping address</label>
+          <select id="addressSelect">
+            <option value="">Login to see addresses</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="shippingSelect">Shipping method</label>
+          <select id="shippingSelect">
+            <option value="">Loading shipping methods...</option>
+          </select>
+        </div>
+
+        <div id="cartItems"></div>
+
+        <div id="cartSummary"></div>
+
+        <button id="checkoutBtn">Checkout</button>
+      </div>
+    </section>
   </main>
-</div>
-    
 
-    <script src="JS/product-card.js"></script>
-    <script src="JS/cart.js"></script>
-    <script src="JS/login.js"></script>
+  <!-- Scripts -->
+  <!-- 1) config.js MUST be first -->
+  <script src="JS/config.js"></script>
+
+  <!-- 2) product page logic (categories + search + add to cart) -->
+  <script src="JS/product-card.js"></script>
+
+  <!-- 3) cart logic + checkout -->
+  <script src="JS/cart.js"></script>
+
+  <!-- 4) login logic (fills addressSelect + shippingSelect) -->
+  <script src="JS/login.js"></script>
 </body>
 </html>

@@ -1,245 +1,217 @@
-// =======================
-// CONFIG
-// =======================
-const API_URL = "http://localhost:3007";
-const CART_KEY = "cart";
+// cart.js (checkout auto-fill)
+// Requiere: #checkoutBtn, #cartItems, #cartSummary
+// Opcional: #addressSelect, #shippingSelect (si existen, los llena)
 
-// =======================
-// DOM
-// =======================
-const productsGrid = document.getElementById("productsGrid");
-const cartItemsEl = document.getElementById("cartItems");
-const cartSummaryEl = document.getElementById("cartSummary");
-const checkoutBtn = document.getElementById("checkoutBtn");
-
-// Keep last fetched products here so we can add by id
-let currentProducts = [];
-
-// =======================
-// CART (localStorage)
-// =======================
-function getCart() {
-  try {
-    return JSON.parse(localStorage.getItem(CART_KEY)) || [];
-  } catch {
-    return [];
-  }
-}
-
-function saveCart(cart) {
-  localStorage.setItem(CART_KEY, JSON.stringify(cart));
-}
-
-function addToCart(product, qty = 1) {
-  const cart = getCart();
-  const existing = cart.find((i) => i.product_id === product.product_id);
-
-  if (existing) {
-    existing.qty += qty;
-  } else {
-    cart.push({
-      product_id: product.product_id,
-      product_name: product.product_name,
-      listing_price: Number(product.listing_price),
-      qty
-    });
-  }
-
-  saveCart(cart);
-}
-
-function updateQty(product_id, newQty) {
-  let cart = getCart();
-  const item = cart.find((i) => i.product_id === product_id);
-  if (!item) return;
-
-  item.qty = newQty;
-
-  if (item.qty <= 0) {
-    cart = cart.filter((i) => i.product_id !== product_id);
-  }
-
-  saveCart(cart);
-}
-
-function clearCart() {
-  saveCart([]);
-}
-
-function getCartTotals() {
-  const cart = getCart();
-  const itemsCount = cart.reduce((sum, i) => sum + i.qty, 0);
-  const total = cart.reduce((sum, i) => sum + i.qty * i.listing_price, 0);
-  return { itemsCount, total };
-}
-
-// =======================
-// RENDER UI
-// =======================
-function renderProductCard(p) {
-  return `
-    <article class="card">
-      <h3>${p.product_name}</h3>
-      <p><strong>${Number(p.listing_price).toFixed(2)} kr</strong></p>
-      <button class="addToCartBtn" data-id="${p.product_id}">
-        Add to cart
-      </button>
-    </article>
-  `;
-}
-
-function renderProducts() {
-  if (!currentProducts.length) {
-    productsGrid.innerHTML = "<p>No products found.</p>";
-    return;
-  }
-  productsGrid.innerHTML = currentProducts.map(renderProductCard).join("");
-}
-
-function renderCart() {
-  const cart = getCart();
-
-  if (!cart.length) {
-    cartItemsEl.innerHTML = "<p>Your cart is empty.</p>";
-    cartSummaryEl.innerHTML = "";
-    return;
-  }
-
-  cartItemsEl.innerHTML = cart
-    .map(
-      (item) => `
-      <div class="cart-row" data-id="${item.product_id}">
-        <div>
-          <strong>${item.product_name}</strong><br />
-          <small>${item.listing_price} kr each</small>
-        </div>
-
-        <div>
-          <button class="minusBtn">-</button>
-          <span class="qty">${item.qty}</span>
-          <button class="plusBtn">+</button>
-        </div>
-
-        <div>
-          <strong>${(item.qty * item.listing_price).toFixed(2)} kr</strong>
-          <button class="removeBtn">Remove</button>
-        </div>
-      </div>
-    `
-    )
-    .join("");
-
-  const { itemsCount, total } = getCartTotals();
-  cartSummaryEl.innerHTML = `
-    <p>Items: <strong>${itemsCount}</strong></p>
-    <p>Total: <strong>${total.toFixed(2)} kr</strong></p>
-  `;
-}
-
-// =======================
-// API: LOAD PRODUCTS
-// =======================
-async function loadAllProducts() {
-  const res = await fetch(`${API_BASE}/products`);
-  if (!res.ok) {
-    productsGrid.innerHTML = `<p>Error loading products (${res.status})</p>`;
-    return;
-  }
-
-  currentProducts = await res.json();
-  renderProducts();
-}
-
-// =======================
-// EVENTS
-// =======================
-
-// Add to cart
-productsGrid.addEventListener("click", (e) => {
-  const btn = e.target.closest(".addToCartBtn");
-  if (!btn) return;
-
-  const id = Number(btn.dataset.id);
-  const product = currentProducts.find((p) => p.product_id === id);
-  if (!product) return;
-
-  addToCart(product, 1);
-  renderCart();
-});
-
-// Cart qty controls
-cartItemsEl.addEventListener("click", (e) => {
-  const row = e.target.closest(".cart-row");
-  if (!row) return;
-
-  const product_id = Number(row.dataset.id);
-  const cart = getCart();
-  const item = cart.find((i) => i.product_id === product_id);
-  if (!item) return;
-
-  if (e.target.closest(".plusBtn")) updateQty(product_id, item.qty + 1);
-  if (e.target.closest(".minusBtn")) updateQty(product_id, item.qty - 1);
-  if (e.target.closest(".removeBtn")) updateQty(product_id, 0);
-
-  renderCart();
-});
-
-// Checkout → create order
-checkoutBtn.addEventListener("click", async () => {
-  const cart = getCart();
-  if (!cart.length) return alert("Cart is empty!");
-
-  const { total } = getCartTotals();
-
-  // This payload depends on your backend order schema
-  const payload = {
-    customer_id: 1, // later: from logged-in user
-    total_price: total,
-    items: cart.map((i) => ({
-      product_id: i.product_id,
-      qty: i.qty,
-      price: i.listing_price
-    }))
+(function () {
+  window.APP = window.APP || {
+    API_URL: "http://localhost:3007",
+    CART_KEY: "cart",
+    CURRENT_USER_KEY: "currentUser"
   };
 
-  // ✅ This requires that your backend has POST /orders
-  const res = await fetch(`${API_BASE}/orders`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
+  const cartItemsEl = document.getElementById("cartItems");
+  const cartSummaryEl = document.getElementById("cartSummary");
+  const checkoutBtn = document.getElementById("checkoutBtn");
 
-  if (!res.ok) {
-    const errText = await res.text();
-    alert("Order failed: " + errText);
-    return;
+  // -----------------------
+  // user
+  // -----------------------
+  function getCurrentUser() {
+    if (window.APP.getCurrentUser) return window.APP.getCurrentUser();
+    try {
+      return JSON.parse(localStorage.getItem(window.APP.CURRENT_USER_KEY) || "null");
+    } catch {
+      return null;
+    }
   }
 
-  const data = await res.json();
+  // -----------------------
+  // cart storage
+  // -----------------------
+  function getCart() {
+    try {
+      return JSON.parse(localStorage.getItem(window.APP.CART_KEY)) || [];
+    } catch {
+      return [];
+    }
+  }
 
-  clearCart();
-  renderCart();
-  alert("Order created! ID: " + (data.order_id ?? "OK"));
-});
+  function saveCart(cart) {
+    localStorage.setItem(window.APP.CART_KEY, JSON.stringify(cart));
+  }
 
-// =======================
-// INIT
-// =======================
-(async function init() {
-  await loadAllProducts();
+  function clearCart() {
+    saveCart([]);
+  }
+
+  function getCartTotals() {
+    const cart = getCart();
+    const itemsCount = cart.reduce((sum, i) => sum + i.qty, 0);
+    const total = cart.reduce((sum, i) => sum + i.qty * i.listing_price, 0);
+    return { itemsCount, total };
+  }
+
+  function renderCart() {
+    if (!cartItemsEl || !cartSummaryEl) return;
+    const cart = getCart();
+
+    if (!cart.length) {
+      cartItemsEl.innerHTML = "<p>Your cart is empty.</p>";
+      cartSummaryEl.innerHTML = "";
+      return;
+    }
+
+    cartItemsEl.innerHTML = cart
+      .map(
+        (item) => `
+        <div class="cart-row" data-id="${item.product_id}">
+          <div>
+            <strong>${item.product_name}</strong><br />
+            <small>${Number(item.listing_price).toFixed(2)} kr each</small>
+          </div>
+          <div>
+            <span class="qty">x ${item.qty}</span>
+          </div>
+          <div>
+            <strong>${(item.qty * item.listing_price).toFixed(2)} kr</strong>
+          </div>
+        </div>
+      `
+      )
+      .join("");
+
+    const { itemsCount, total } = getCartTotals();
+    cartSummaryEl.innerHTML = `
+      <p>Items: <strong>${itemsCount}</strong></p>
+      <p>Total: <strong>${total.toFixed(2)} kr</strong></p>
+    `;
+  }
+
+  // -----------------------
+  // checkout data loaders (AUTO)
+  // -----------------------
+  async function ensureShippingMethodsLoaded(shippingSelectEl) {
+    if (!shippingSelectEl) return;
+
+    // si ya tiene opciones válidas, no recargamos
+    if (shippingSelectEl.options.length > 0 && shippingSelectEl.value) return;
+
+    const res = await fetch(`${window.APP.API_URL}/shipping-methods`);
+    if (!res.ok) {
+      shippingSelectEl.innerHTML = `<option value="">Error loading shipping</option>`;
+      return;
+    }
+
+    const methods = await res.json();
+    if (!methods.length) {
+      shippingSelectEl.innerHTML = `<option value="">No shipping methods</option>`;
+      return;
+    }
+
+    shippingSelectEl.innerHTML = methods
+      .map((m) => `<option value="${m.shipping_methods_id}">${m.method_name}</option>`)
+      .join("");
+
+    // selecciona el primero
+    shippingSelectEl.value = String(methods[0].shipping_methods_id);
+  }
+
+  async function ensureAddressesLoaded(addressSelectEl, user) {
+    if (!addressSelectEl) return;
+
+    // si ya tiene opciones válidas, no recargamos
+    if (addressSelectEl.options.length > 0 && addressSelectEl.value) return;
+
+    const res = await fetch(`${window.APP.API_URL}/customers/${user.customer_id}/addresses`);
+    if (!res.ok) {
+      addressSelectEl.innerHTML = `<option value="">Error loading addresses</option>`;
+      return;
+    }
+
+    const addresses = await res.json();
+    if (!addresses.length) {
+      addressSelectEl.innerHTML = `<option value="">No addresses found</option>`;
+      return;
+    }
+
+    addressSelectEl.innerHTML = addresses
+      .map(
+        (a) =>
+          `<option value="${a.address_id}">${a.address}${a.city ? `, ${a.city}` : ""}</option>`
+      )
+      .join("");
+
+    // selecciona la primera
+    addressSelectEl.value = String(addresses[0].address_id);
+  }
+
+  // -----------------------
+  // checkout
+  // -----------------------
+  checkoutBtn?.addEventListener("click", async () => {
+    const user = getCurrentUser();
+    if (!user) {
+      alert("You must login first!");
+      return;
+    }
+
+    const cart = getCart();
+    if (!cart.length) {
+      alert("Cart is empty!");
+      return;
+    }
+
+    const addressSelectEl = document.getElementById("addressSelect");
+    const shippingSelectEl = document.getElementById("shippingSelect");
+
+    if (!addressSelectEl || !shippingSelectEl) {
+      alert("This page is missing addressSelect / shippingSelect in HTML.");
+      return;
+    }
+
+    // ✅ Auto-fill + auto-select first option
+    await ensureShippingMethodsLoaded(shippingSelectEl);
+    await ensureAddressesLoaded(addressSelectEl, user);
+
+    const shipping_address_id = Number(addressSelectEl.value);
+    const shipping_method_id = Number(shippingSelectEl.value);
+
+    if (!shipping_address_id) {
+      alert("Please choose an address");
+      return;
+    }
+    if (!shipping_method_id) {
+      alert("Please choose a shipping method");
+      return;
+    }
+
+    const payload = {
+      customer_id: user.customer_id,
+      shipping_address_id,
+      shipping_method_id,
+      order_items: cart.map((i) => ({
+        product_id: i.product_id,
+        product_quantity: i.qty
+      }))
+    };
+
+    const res = await fetch(`${window.APP.API_URL}/orders`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      alert("Order failed: " + errText);
+      return;
+    }
+
+    const okText = await res.text();
+    clearCart();
+    renderCart();
+    alert(okText);
+  });
+
   renderCart();
 })();
-const user = getCurrentUser();
-if (!user) return alert("You must login first!");
-
-/* const payload = {
-  customer_id: user.customer_id,
-  shipping_address_id: Number(addressSelect.value),
-  shipping_method_id: Number(shippingSelect.value),
-  total_price: total,
-  items: cart.map(i => ({
-    product_id: i.product_id,
-    qty: i.qty,
-    price: i.listing_price
-  }))
-}; */

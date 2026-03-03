@@ -1,22 +1,25 @@
-const connection = require("../config/db");
+// server/controllers/loginController.js
+const pool = require("../config/db");
 
-exports.login = (req, res) => {
+exports.login = async (req, res) => {
   const { email } = req.body;
 
-  if (!email) {
-    return res.status(400).send({ message: "Email is required" });
+  if (!email) return res.status(400).send({ message: "Email is required" });
+
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    const [rows] = await connection.query(
+      "SELECT customer_id, first_name, last_name, email FROM customers WHERE email = ?",
+      [email]
+    );
+
+    if (!rows.length) return res.status(401).send({ message: "User not found" });
+
+    res.status(200).json(rows[0]);
+  } catch (err) {
+    res.status(500).send(err);
+  } finally {
+    if (connection) connection.release();
   }
-
-  connection.query(
-    "SELECT customer_id, first_name, last_name, email FROM customers WHERE email = ?",
-    [email],
-    (err, data) => {
-      if (err) return res.status(500).send(err);
-      if (!data.length) {
-        return res.status(401).send({ message: "User not found" });
-      }
-
-      res.status(200).send(data[0]);
-    }
-  );
 };

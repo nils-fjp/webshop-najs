@@ -1,8 +1,15 @@
-const connection = require("../config/db");
+// server/controllers/shippingController.js
+const pool = require("../config/db");
 
-exports.getShippingMethods = (req, res) => {
-  connection.query("SELECT * FROM shipping_methods", (err, data) => {
-    if (err) return res.status(500).send(err);
-    res.status(200).send(data);
-  });
+exports.getShippingMethods = async (req, res) => {
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    const [rows] = await connection.query("SELECT * FROM shipping_methods");
+    res.status(200).json(rows);
+  } catch (err) {
+    res.status(500).send(err);
+  } finally {
+    if (connection) connection.release();
+  }
 };
