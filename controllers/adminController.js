@@ -3,7 +3,38 @@ const pool = require("../config/db");
 exports.getAllOrders = async (req, res) => {
   try {
     const [data] = await pool.query(
-      "SELECT * FROM orders order by order_date desc",
+      `SELECT 
+        orders.order_id,
+        orders.total_price,
+        orders.order_date,
+        orders.order_status,
+        
+        customers.customer_id,
+        customers.username,
+        customers.email,
+        customers.first_name,
+        customers.last_name,
+        
+        order_items.product_quantity,
+        order_items.item_price,
+
+        products.product_name,
+
+        customer_addresses.address,
+        customer_addresses.city,
+        customer_addresses.state_or_province,
+        customer_addresses.postal_code,
+        customer_addresses.country,
+
+        shipping_methods.method_name
+
+      FROM orders
+      JOIN customers ON customers.customer_id = orders.customer_id
+      JOIN order_items ON orders.order_id = order_items.order_id
+      JOIN products ON products.product_id = order_items.product_id
+      JOIN customer_addresses ON orders.shipping_address_id = customer_addresses.address_id
+      JOIN shipping_methods ON orders.shipping_method_id = shipping_methods.shipping_methods_id
+      ORDER BY orders.order_date DESC`,
     );
     res.status(200).send(data);
   } catch (err) {
@@ -14,7 +45,38 @@ exports.getAllOrders = async (req, res) => {
 exports.getOrderById = async (req, res) => {
   try {
     const [data] = await pool.query(
-      "SELECT * FROM orders WHERE order_id = ?",
+      `SELECT 
+        orders.order_id,
+        orders.total_price,
+        orders.order_date,
+        orders.order_status,
+        
+        customers.customer_id,
+        customers.username,
+        customers.email,
+        customers.first_name,
+        customers.last_name,
+        
+        order_items.product_quantity,
+        order_items.item_price,
+
+        products.product_name,
+
+        customer_addresses.address,
+        customer_addresses.city,
+        customer_addresses.state_or_province,
+        customer_addresses.postal_code,
+        customer_addresses.country,
+
+        shipping_methods.method_name
+
+      FROM orders
+      JOIN customers ON customers.customer_id = orders.customer_id
+      JOIN order_items ON orders.order_id = order_items.order_id
+      JOIN products ON products.product_id = order_items.product_id
+      JOIN customer_addresses ON orders.shipping_address_id = customer_addresses.address_id
+      JOIN shipping_methods ON orders.shipping_method_id = shipping_methods.shipping_methods_id
+      WHERE orders.order_id = ?`,
       [req.params.order_id],
     );
     res.status(200).send(data);
@@ -226,46 +288,27 @@ exports.postProductById = async (req, res) => {
   }
 };
 // update product via put by product_id in route params
-exports.putProductById = (req, res) => {
-  connection.query(
-    `UPDATE products 
-    SET product_name = ?, 
-    product_code = ?, 
-    listing_price = ?, 
-    stock_quantity = ?, 
-    product_description = ? 
-    WHERE product_id = ?`,
-    [
-      req.body.product_name,
-      req.body.product_code,
-      req.body.listing_price,
-      req.body.stock_quantity,
-      req.body.product_description,
-      req.params.product_id,
-    ],
-    (err, data) => {
-      if (err) return res.status(500).send(err);
-      if (data.affectedRows === 0) {
-        return res.status(404).send("Product not found. ");
-      }
-      res.status(200).send(`Product ${req.params.product_id} updated. `);
-    },
-  );
+exports.putProductById = async (req, res) => {
+  try {
+    const [data] = await pool.query(
+      `UPDATE products 
+      SET product_name = ?, 
+      product_code = ?, 
+      listing_price = ?, 
+      stock_quantity = ?, 
+      product_description = ? 
+      WHERE product_id = ?`,
+      [
+        req.body.product_name,
+        req.body.product_code,
+        req.body.listing_price,
+        req.body.stock_quantity,
+        req.body.product_description,
+        req.params.product_id,
+      ],
+    );
+    res.status(200).send(`Product ${req.params.product_id} updated. `);
+  } catch (err) {
+    res.status(500).send(err);
+  }
 };
-/* 
-exports.mostPurchased = (req, res) => {
-  connection.query(
-    `SELECT 
-    product_id,
-    SUM(product_quantity) AS total_units_sold
-    FROM order_items
-    GROUP BY product_id
-    ORDER BY total_units_sold DESC
-    LIMIT 3;`,
-    (err, data) => {
-      if (err) return res.status(500).send(err);
-      res.status(200).send(data);
-    },
-  );
-};
- */
