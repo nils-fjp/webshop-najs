@@ -11,9 +11,20 @@
         <button id="searchBtn">Search</button>
     </div>
 
-    <div id="productGrid" class="grid">
+    <div id="productsGrid" class="grid">
     </div>
     <script>
+      function renderProductCard(product) {
+        return `
+          <article class="card" data-id="${product.product_id}">
+            <h3>${product.product_name}</h3>
+            ${product.image_url ? `<img src="${product.image_url}" alt="${product.product_name}">` : ""}
+            ${product.product_description ? `<p>${product.product_description}</p>` : ""}
+            ${product.listing_price ? `<p><strong>$${product.listing_price} kr</strong></p>` : ""}
+            <button class="detailsBtn">Details</button>
+          </article>`;
+      }
+
         const API_BASE = "http://localhost:3007";
 const grid = document.getElementById("productsGrid");
 
