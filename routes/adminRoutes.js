@@ -10,15 +10,15 @@ router.get("/", (req, res) => {
 // admin orders by request body
 router.get("/orders", adminController.getAllOrders);
 
+// admin orders by route params
+router.get("/orders/:order_id", adminController.getOrderById);
+
 // admin products by request body
 router.get("/products", productController.getAllProducts);
 router.post("/products", adminController.postProducts);
 router.patch("/products", adminController.patchProducts);
 router.put("/products", adminController.putProducts);
 router.delete("/products", adminController.deleteProducts);
-
-// admin orders by route params
-router.get("/orders/:order_id", adminController.getOrderById);
 
 // admin products by route params
 router.get("/products/:product_id", productController.getProductById);

@@ -1,5 +1,7 @@
 # Node modules
 node_modules/
+.vscode*
+.DS_Store*
 
 # Logs
 logs
