@@ -14,9 +14,9 @@
     350px,
     70vh,
     500px
-  ); /* ← CHANGED: height fija en lugar de min-height */
+  ); /* CHANGED: fixed height instead of min-height */
   margin-bottom: var(--spacing-lg);
-  overflow: hidden; /* ← ADDED: Evita contenido que sobresalga */
+  overflow: hidden; /* ADDED: Prevent overflowing content */
 }
 
 /* =============================================
@@ -29,8 +29,8 @@
   border: 1px solid var(--border);
   border-radius: clamp(12px, 2vw, 16px);
   padding: clamp(1.5rem, 4vw, 2.5rem);
-  height: 100%; /* ← CHANGED: Usa toda la altura del contenedor */
-  min-height: unset; /* ← REMOVED: Ya no necesitamos min-height */
+  height: 100%; /* CHANGED: Use full container height */
+  min-height: unset; /* REMOVED: min-height is no longer needed */
   position: absolute;
   top: 0;
   left: 0;

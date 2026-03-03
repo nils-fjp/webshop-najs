@@ -3,326 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="CSS/sidebar.css" />
   <title>Webshop</title>
-
-  <style>
-    :root{
-      --bg:#0f1115;
-      --panel:#151924;
-      --panel2:#111521;
-      --text:#e8e8ea;
-      --muted:#a6adbb;
-      --line:#2a3142;
-      --btn:#2f6fed;
-      --btn2:#1f2a44;
-      --ok:#22c55e;
-      --warn:#f59e0b;
-      --danger:#ef4444;
-      --radius:14px;
-    }
-
-    *{ box-sizing:border-box; }
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      background: radial-gradient(1200px 800px at 30% 10%, #1a2450 0%, var(--bg) 55%);
-      color:var(--text);
-    }
-
-    header{
-      position: sticky;
-      top:0;
-      z-index:10;
-      backdrop-filter: blur(10px);
-      background: rgba(15,17,21,.65);
-      border-bottom: 1px solid rgba(42,49,66,.6);
-    }
-
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:16px;
-      max-width:1200px;
-      margin:0 auto;
-      padding:14px 16px;
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-weight:700;
-      letter-spacing:.2px;
-    }
-    .brand .dot{
-      width:10px;height:10px;border-radius:50%;
-      background: var(--btn);
-      box-shadow: 0 0 0 4px rgba(47,111,237,.18);
-    }
-
-    .loginBox{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-    .loginBox input{
-      width:230px;
-      padding:10px 12px;
-      border-radius:10px;
-      border:1px solid var(--line);
-      background: rgba(21,25,36,.9);
-      color:var(--text);
-      outline:none;
-    }
-    .loginBox button{
-      padding:10px 12px;
-      border-radius:10px;
-      border:1px solid var(--line);
-      background: var(--btn2);
-      color:var(--text);
-      cursor:pointer;
-    }
-    .loginBox button.primary{
-      background: var(--btn);
-      border-color: rgba(47,111,237,.6);
-    }
-    #userInfo{
-      color: var(--muted);
-      font-size: 13px;
-      max-width:420px;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
-
-    .layout{
-      max-width:1200px;
-      margin:0 auto;
-      padding:16px;
-      display:grid;
-      grid-template-columns: 260px 1fr 360px;
-      gap:16px;
-    }
-
-    .panel{
-      background: rgba(21,25,36,.9);
-      border: 1px solid rgba(42,49,66,.8);
-      border-radius: var(--radius);
-      box-shadow: 0 12px 30px rgba(0,0,0,.25);
-    }
-
-    .panelHeader{
-      padding:14px 14px 10px 14px;
-      border-bottom: 1px solid rgba(42,49,66,.8);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-
-    .panelHeader h2{
-      margin:0;
-      font-size:14px;
-      color: var(--muted);
-      font-weight:600;
-      letter-spacing:.2px;
-      text-transform:uppercase;
-    }
-
-    /* Categories */
-    #categoriesSide{
-      padding:10px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      max-height: calc(100vh - 180px);
-      overflow:auto;
-    }
-    .catItem{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      width:100%;
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid rgba(42,49,66,.8);
-      background: rgba(17,21,33,.55);
-      color: var(--text);
-      cursor:pointer;
-      transition: transform .05s ease, background .2s ease;
-    }
-    .catItem:hover{ background: rgba(31,42,68,.6); }
-    .catItem:active{ transform: translateY(1px); }
-    .catItem.active{
-      border-color: rgba(47,111,237,.7);
-      background: rgba(47,111,237,.15);
-    }
-
-    /* Main */
-    .mainTop{
-      padding:14px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      border-bottom:1px solid rgba(42,49,66,.8);
-    }
-
-    #pageTitle{
-      margin:0;
-      font-size:18px;
-      font-weight:700;
-      letter-spacing:.2px;
-    }
-
-    .searchRow{
-      display:flex;
-      gap:8px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-
-    .searchRow input{
-      width:280px;
-      padding:10px 12px;
-      border-radius:10px;
-      border:1px solid var(--line);
-      background: rgba(17,21,33,.7);
-      color:var(--text);
-      outline:none;
-    }
-    .searchRow button{
-      padding:10px 12px;
-      border-radius:10px;
-      border:1px solid var(--line);
-      background: var(--btn2);
-      color:var(--text);
-      cursor:pointer;
-    }
-    .searchRow button.primary{
-      background: var(--btn);
-      border-color: rgba(47,111,237,.6);
-    }
-
-    #productsGrid{
-      padding:14px;
-      display:grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-      gap:12px;
-    }
-
-    .card{
-      border-radius: 14px;
-      border:1px solid rgba(42,49,66,.8);
-      background: rgba(17,21,33,.6);
-      padding:12px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      min-height:120px;
-    }
-    .card h3{ margin:0; font-size:15px; }
-    .card p{ margin:0; color: var(--muted); font-size:13px; line-height:1.35; }
-    .card small{ color: var(--muted); }
-    .card button{
-      margin-top:auto;
-      padding:10px 12px;
-      border-radius:10px;
-      border:1px solid rgba(42,49,66,.8);
-      background: rgba(47,111,237,.18);
-      color: var(--text);
-      cursor:pointer;
-    }
-
-    /* Cart */
-    .cartBody{ padding:14px; display:flex; flex-direction:column; gap:12px; }
-    .cartBody label{
-      font-size:12px;
-      color: var(--muted);
-      display:block;
-      margin-bottom:6px;
-    }
-    .cartBody select{
-      width:100%;
-      padding:10px 12px;
-      border-radius:10px;
-      border:1px solid var(--line);
-      background: rgba(17,21,33,.7);
-      color: var(--text);
-      outline:none;
-    }
-    #cartItems{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      max-height: 330px;
-      overflow:auto;
-      padding-right:6px;
-    }
-    .cart-row{
-      display:grid;
-      grid-template-columns: 1fr auto auto;
-      gap:10px;
-      align-items:center;
-      border:1px solid rgba(42,49,66,.8);
-      background: rgba(17,21,33,.55);
-      padding:10px;
-      border-radius:12px;
-    }
-    .cart-row .qtyBox{
-      display:flex; gap:6px; align-items:center;
-      border:1px solid rgba(42,49,66,.8);
-      background: rgba(15,17,21,.65);
-      border-radius:10px;
-      padding:6px;
-    }
-    .cart-row button{
-      width:30px;height:30px;border-radius:8px;
-      border:1px solid rgba(42,49,66,.8);
-      background: rgba(31,42,68,.65);
-      color:var(--text);
-      cursor:pointer;
-    }
-    .cart-row .removeBtn{
-      width:auto;
-      padding:6px 10px;
-      background: rgba(239,68,68,.15);
-      border-color: rgba(239,68,68,.35);
-    }
-    #cartSummary{
-      border-top:1px solid rgba(42,49,66,.8);
-      padding-top:10px;
-      color: var(--muted);
-      font-size:13px;
-    }
-    #checkoutBtn{
-      padding:12px 12px;
-      border-radius:12px;
-      border:1px solid rgba(47,111,237,.6);
-      background: var(--btn);
-      color: var(--text);
-      font-weight:700;
-      cursor:pointer;
-    }
-
-    @media (max-width: 1100px){
-      .layout{ grid-template-columns: 240px 1fr; }
-      .cartPanel{ grid-column: 1 / -1; }
-      #productsGrid{ grid-template-columns: repeat(3, minmax(0,1fr)); }
-    }
-    @media (max-width: 820px){
-      .layout{ grid-template-columns: 1fr; }
-      #productsGrid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
-      .loginBox input{ width: 100%; }
-    }
-  </style>
 </head>
 
 <body>
+  <div id="customerPage">
   <header>
     <div class="topbar">
       <div class="brand">
@@ -392,6 +78,198 @@
       </div>
     </section>
   </main>
+  </div>
+  <div id="adminPage">
+    <header>
+      <h2>Najs frontend</h2>
+    </header>
+    <main>
+      <form>
+        <button id="buyBtn">Buy</button>
+        <pre id="output"></pre>
+      </form>
+      <button id="buyBtn">Buy</button>
+      <pre id="output"></pre>
+      <form>
+        <label>Port:<input id="port" type="number" value="3007" /></label>
+        <label>Endpoint:<input id="endpoint" value="products" /></label>
+        <button id="getBtn" type="submit">GET</button>
+        <label
+          >Search:<input id="searchField" type="search" name="search" /><button
+            id="searchBtn"
+            type="submit"
+          >
+            Sök
+          </button></label
+        >
+        <hr />
+        <label
+          >Username:<input id="usernameField" type="search" name="username"
+        /></label>
+        <label
+          >Password:
+          <input type="password" name="pass" id="passwordField" /><button
+            id="passwordBtn"
+            type="submit"
+          >
+            Login
+          </button></label
+        >
+      </form>
+      <hr />
+      <h2>Skapa order</h2>
+      <!-- <form id="orderForm">
+        <label>
+          customer_id:
+          <input id="Customer_id" type="text" name="Customer_id" />
+          product_id:
+          <input id="product_id" type="text" name="product_id" />
+          product_quantity:
+          <input id="product_quantity" type="text" name="product_quantity" />
+          <button id="submitBtn" type="submit">Post</button>
+        </label>
+      </form> -->
+
+      <form id="orderForm" onsubmit="submitOrder(event)">
+        <label
+          >Customer ID:
+          <input id="customer_id" type="number" name="customer_id" required />
+        </label>
+
+        <label
+          >Shipping Address ID:
+          <input
+            id="shipping_address_id"
+            type="number"
+            name="shipping_address_id"
+            required
+          />
+        </label>
+
+        <label
+          >Shipping Method ID:
+          <input
+            id="shipping_method_id"
+            type="number"
+            name="shipping_method_id"
+            required
+          />
+        </label>
+
+        <div id="productsContainer">
+          <div
+            class="product-row"
+            style="display: flex; gap: 10px; margin: 8px 0"
+          >
+            <label
+              >Product ID:
+              <input type="number" name="product_id" required />
+            </label>
+            <label
+              >Quantity:
+              <input type="number" name="product_quantity" min="1" required />
+            </label>
+            <button
+              type="button"
+              onclick="removeProduct(this)"
+              style="color: red"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+
+        <button type="button" onclick="addProduct()">+ Add Product</button>
+        <button type="submit" id="submitBtn">Post</button>
+      </form>
+
+      <script>
+        function addProduct() {
+          const container = document.getElementById("productsContainer");
+          const row = document.createElement("div");
+          row.className = "product-row";
+          row.style = "display:flex; gap:10px; margin:8px 0;";
+          row.innerHTML = `
+      <label>Product ID: <input type="number" name="product_id" required /></label>
+      <label>Quantity: <input type="number" name="product_quantity" min="1" required /></label>
+      <button type="button" onclick="removeProduct(this)" style="color:red;">✕</button>
+    `;
+          container.appendChild(row);
+        }
+
+        function removeProduct(btn) {
+          const rows = document.querySelectorAll(".product-row");
+          if (rows.length > 1) {
+            btn.parentElement.remove();
+          } else {
+            alert("At least one product is required.");
+          }
+        }
+        /* ////////////////////////////////////////////////////////////////() */
+
+        /* ////////////////////////////////////////////////////////////////() */
+        submitBtn.addEventListener("click", (event) => {
+          event.preventDefault();
+
+          // Hämtar de tre huvud-fälten
+          const customer_id = parseInt(
+            document.getElementById("customer_id").value,
+          );
+          const shipping_address_id = parseInt(
+            document.getElementById("shipping_address_id").value,
+          );
+          const shipping_method_id = parseInt(
+            document.getElementById("shipping_method_id").value,
+          );
+
+          // Samlar ihop alla produktrader till order_items
+          const rows = document.querySelectorAll(".product-row");
+          const order_items = [];
+
+          rows.forEach((row) => {
+            const inputs = row.querySelectorAll("input");
+            order_items.push({
+              product_id: parseInt(inputs[0].value),
+              product_quantity: parseInt(inputs[1].value),
+            });
+          });
+
+          // Bygger upp JSON-objektet
+          const order = {
+            customer_id: customer_id,
+            shipping_address_id: shipping_address_id,
+            shipping_method_id: shipping_method_id,
+            order_items: order_items,
+          };
+
+          console.log("Submitting order:", order);
+
+          // Använder port och endpoint från sidan, precis som GET-anropen
+          fetch(`http://localhost:${port.value}/${endpoint.value}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(order),
+          })
+            .then((res) => res.json())
+            .then((data) => console.log("Success:", data))
+            .catch((err) => console.error("Error:", err));
+        });
+      </script>
+
+      <!-- //////////////////////////////////////////////////////////////// -->
+
+      <h3>Data laddad från backend:</h3>
+      <table id="table"></table>
+
+      <div></div>
+    </main>
+    <footer>
+      <p>
+        &copy; 2026 Najs frontendprojekt.
+        <b><i>Upphovsrättsbrott beivras ej.</i></b>
+      </p>
+    </footer>
+  </div>
 
   <!-- Scripts -->
   <!-- 1) config.js MUST be first -->
@@ -405,5 +283,7 @@
 
   <!-- 4) login logic (fills addressSelect + shippingSelect) -->
   <script src="JS/login.js"></script>
+
+  <script src="JS/admin.js"></script>
 </body>
 </html>

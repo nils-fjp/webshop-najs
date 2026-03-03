@@ -1,5 +1,5 @@
-// login.js (robusto con IDs)
-// Funciona aunque tu input NO se llame exactamente emailInput
+// login.js (robust with IDs)
+// Works even if your input is not named exactly emailInput
 
 (function () {
   window.APP = window.APP || {

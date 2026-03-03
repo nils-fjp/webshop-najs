@@ -1,5 +1,5 @@
-// product-card.js (categorías + search + add to cart)
-// Requiere: #categoriesSide, #productsGrid, #pageTitle, #searchInput, #searchBtn, #clearBtn
+// product-card.js (categories + search + add to cart)
+// Requires: #categoriesSide, #productsGrid, #pageTitle, #searchInput, #searchBtn, #clearBtn
 
 (function () {
   window.APP = window.APP || {
@@ -16,7 +16,7 @@
   const searchBtn = document.getElementById("searchBtn");
   const clearBtn = document.getElementById("clearBtn");
 
-  // Si falta algo crítico, no petamos todo
+  // If something critical is missing, fail gracefully
   if (!categoriesSide || !grid || !pageTitle) return;
 
   let activeCategoryName = ""; // "" = All
@@ -95,7 +95,7 @@
     let products = [];
 
     if (!activeCategoryName) {
-      // All products (con search en backend)
+      // All products (with backend search)
       const url = new URL(`${window.APP.API_URL}/products`);
       if (searchTerm) url.searchParams.set("search", searchTerm);
 
@@ -106,7 +106,7 @@
       }
       products = await res.json();
     } else {
-      // Products por categoría (tu endpoint actual)
+      // Products by category (current endpoint)
       const url = `${window.APP.API_URL}/categories/${encodeURIComponent(activeCategoryName)}`;
       const res = await fetch(url);
       if (!res.ok) {
@@ -116,7 +116,7 @@
 
       products = await res.json();
 
-      // search simple en frontend
+      // Simple frontend search
       if (searchTerm) {
         const s = searchTerm.toLowerCase();
         products = products.filter((p) =>
@@ -167,23 +167,21 @@
 
     const id = Number(btn.dataset.id);
 
-    // pillamos el producto desde el HTML renderizado (simple: buscamos el nombre/precio del DOM NO)
-    // Mejor: volver a pedirlo (pero es más lento). Aquí hacemos simple: guardamos un mapa rápido.
-    // Solución simple: añadimos data attributes mínimos en el botón:
-    // Pero para no complicar: hacemos fetch del producto por id si tienes endpoint.
-    // Como no sabemos si existe /products/:id, hacemos método básico:
-    // -> Guardar en variable global los últimos products usados:
+    // We could pull the product from rendered HTML (name/price from DOM), but avoid that.
+    // Better option: fetch it again (slower). Here we keep it simple with a quick in-memory map.
+    // Simple approach: keep the latest loaded products in a global variable.
+    // If /products/:id exists, fetching by id is another valid path.
   });
 
-  // Para que el add funcione sin endpoint extra, guardamos los últimos productos pintados:
+  // To make add-to-cart work without an extra endpoint, store the latest rendered products:
   let lastRenderedProducts = [];
   const originalReload = reloadProducts;
   reloadProducts = async function () {
     await originalReload();
-    // reconstruimos lastRenderedProducts con una llamada extra NO. Mejor: setear antes de pintar.
+    // Do not rebuild lastRenderedProducts with an extra request; set it before rendering.
   };
 
-  // Reescribimos ligeramente: interceptamos el render y guardamos
+  // Slight rewrite: intercept render and store products
   const _reloadProducts = reloadProducts;
   reloadProducts = async function () {
     pageTitle.textContent = activeCategoryName || "All products";

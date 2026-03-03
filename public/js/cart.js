@@ -1,6 +1,6 @@
 // cart.js (checkout auto-fill)
-// Requiere: #checkoutBtn, #cartItems, #cartSummary
-// Opcional: #addressSelect, #shippingSelect (si existen, los llena)
+// Requires: #checkoutBtn, #cartItems, #cartSummary
+// Optional: #addressSelect, #shippingSelect (if they exist, it populates them)
 
 (function () {
   window.APP = window.APP || {
@@ -93,7 +93,7 @@
   async function ensureShippingMethodsLoaded(shippingSelectEl) {
     if (!shippingSelectEl) return;
 
-    // si ya tiene opciones válidas, no recargamos
+    // If it already has valid options, do not reload
     if (shippingSelectEl.options.length > 0 && shippingSelectEl.value) return;
 
     const res = await fetch(`${window.APP.API_URL}/shipping-methods`);
@@ -112,14 +112,14 @@
       .map((m) => `<option value="${m.shipping_methods_id}">${m.method_name}</option>`)
       .join("");
 
-    // selecciona el primero
+    // Select the first one
     shippingSelectEl.value = String(methods[0].shipping_methods_id);
   }
 
   async function ensureAddressesLoaded(addressSelectEl, user) {
     if (!addressSelectEl) return;
 
-    // si ya tiene opciones válidas, no recargamos
+    // If it already has valid options, do not reload
     if (addressSelectEl.options.length > 0 && addressSelectEl.value) return;
 
     const res = await fetch(`${window.APP.API_URL}/customers/${user.customer_id}/addresses`);
@@ -141,7 +141,7 @@
       )
       .join("");
 
-    // selecciona la primera
+    // Select the first one
     addressSelectEl.value = String(addresses[0].address_id);
   }
 
