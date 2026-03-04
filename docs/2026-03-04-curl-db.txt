@@ -4,16 +4,14 @@ curl -X GET http://localhost:3007/
 curl -X GET http://localhost:3007/products
 curl -X GET http://localhost:3007/products/1
 
-??  curl -X GET http://localhost:3007/orders/1 (+POST)
-
 curl -X GET http://localhost:3007/categories
-?? curl -X GET http://localhost:3007/categories/1
+curl -X GET http://localhost:3007/categories/1
 curl -X GET http://localhost:3007/categories/Audio
 
 curl -X GET http://localhost:3007/admin
 curl -X GET http://localhost:3007/admin/products
 curl -X GET http://localhost:3007/admin/products/1
-curl -X GET http://localhost:3007/admin/orders -- annat format
+curl -X GET http://localhost:3007/admin/orders
 curl -X GET http://localhost:3007/admin/orders/1
 
 curl -X DELETE http://localhost:3007/admin/products/1
