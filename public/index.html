@@ -92,6 +92,11 @@
     </footer>
     <script>
       const renderTable = (data) => {
+        // Kontrollera om data är tom
+        if (!data || data.length === 0) {
+          table.innerHTML = "<tr><td>Inga matchande artiklar</td></tr>";
+          return;
+        }
         table.innerHTML =
           `<tr>${Object.keys(data[0]).map((name) => `<td><b>${name}</b></td>`)
             .join``}</tr>` +
@@ -101,6 +106,7 @@
                 .join``}</tr>`,
           ).join``;
       };
+
       getBtn.addEventListener("click", async (event) => {
         event.preventDefault();
         data = await fetch(
