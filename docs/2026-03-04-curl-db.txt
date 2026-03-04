@@ -14,32 +14,6 @@ curl -X GET http://localhost:3007/admin/products/1
 curl -X GET http://localhost:3007/admin/orders
 curl -X GET http://localhost:3007/admin/orders/1
 
-curl -X DELETE http://localhost:3007/admin/products/1
-
-curl -X GET http://localhost:3007/admin/orders \
-	-H "Content-Type: application/json" \
-	-d '{
-			"order_id": "1"
-		}'
-
-curl -X POST http://localhost:3007/orders \
-	-H "Content-Type: application/json" \
-	-d '{
-			"customer_id":1,
-			"shipping_address_id": 1,
-			"shipping_method_id": 2,
-			"order_items": [
-				{
-					"product_id": 1,
-					"product_quantity": 2
-				},
-				{
-					"product_id": 2,
-					"product_quantity": 1
-				}
-			]
-		}'
-
 curl -X POST http://localhost:3007/admin/products \
 	-H "Content-Type: application/json" \
 	-d '{
@@ -137,10 +111,9 @@ curl -X POST http://localhost:3007/orders \
 			]
 		}'
 
-curl -X GET http://localhost:3007/admin/orders/1
-
 curl -X GET http://localhost:3007/admin/orders \
 	-H "Content-Type: application/json" \
 	-d '{
-			"order_id": "1"
+			"order_id": "21"
 		}'
+		
