@@ -109,6 +109,21 @@ exports.deleteProducts = async (req, res) => {
   }
 };
 
+/* 
+gäller för endpointen: http://localhost:3007/admin/products
+app.use("/admin", adminRoutes);
+router.patch("/products", adminController.patchProducts);
+
+curl -X PATCH http://localhost:3007/admin/products \
+	-H "Content-Type: application/json" \
+	-d '{
+			"product_id": 23,
+			"stock_quantity": 69,
+			"product_description": "Delvis UPDATE av testprodukt med PATCH"
+		}'
+
+*/
+
 // update product via patch by product_id in request body
 exports.patchProducts = async (req, res) => {
   if (req.body.product_id === undefined) {
