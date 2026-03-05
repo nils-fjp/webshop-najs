@@ -7,6 +7,6 @@ Ett grupprojekt inom kursen _Databaser (40 YP)_ på Teknikhögskolan.
 Gruppmedlemmar:
 
 - Nils Paulsson (nils-fjp)
-- Adli Anabstawi (adlianabtawi)
-- Jose Muñoz (JoseMunozO)
+- Adli Anabtawi (adlianabtawi)
+- José Muñoz (JoseMunozO)
 - Sam Shaalan (samshaalan)
