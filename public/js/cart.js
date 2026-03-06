@@ -74,6 +74,7 @@
           </div>
           <div>
             <strong>${(item.qty * item.listing_price).toFixed(2)} kr</strong>
+            <button class="removeBtn" data-id="${item.product_id}">Remove</button>
           </div>
         </div>
       `
@@ -211,6 +212,19 @@
     clearCart();
     renderCart();
     alert(okText);
+  });
+
+  // Expose so product-card.js can trigger a re-render after adding items
+  window.APP.renderCart = renderCart;
+
+  // Remove item from cart (delegated click on .removeBtn)
+  cartItemsEl?.addEventListener("click", (e) => {
+    const btn = e.target.closest(".removeBtn");
+    if (!btn) return;
+    const id = Number(btn.dataset.id);
+    const cart = getCart().filter((i) => i.product_id !== id);
+    saveCart(cart);
+    renderCart();
   });
 
   renderCart();

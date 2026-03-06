@@ -50,6 +50,7 @@
     }
 
     saveCart(cart);
+    if (window.APP.renderCart) window.APP.renderCart();
     alert("Added to cart!");
   }
 

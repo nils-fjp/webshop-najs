@@ -1,193 +1,205 @@
 <!doctype html>
-<html lang="sv">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="data:/" type="image/x-icon" />
-    <title>Najs frontend</title>
+    <link rel="stylesheet" href="style.css" />
+    <title>Webshop</title>
   </head>
-  <body>
-    <header>
-      <h1>Najs frontend</h1>
-    </header>
-    <main>
-      <form>
-        <label>Port:<input id="port" type="number" value="3007" /></label>
-        <label
-          >Endpoint:<input id="endpoint" type="url" value="products"
-        /></label>
-        <button id="getBtn" type="submit">GET</button>
-        <label
-          >Search:<input id="searchField" type="search" name="search"
-        /></label>
-      </form>
-      <h2>Data laddad från backend:</h2>
-      <hr />
-      <table id="table"></table>
-      <hr />
-      <h2>Create Order</h2>
-      <form id="orderForm">
-        <label
-          >Customer ID:
-          <input id="customer_id" type="number" name="customer_id" required />
-        </label>
-        <label
-          >Shipping Address ID:
-          <input
-            id="shipping_address_id"
-            type="number"
-            name="shipping_address_id"
-            required
-          />
-        </label>
 
-        <label
-          >Shipping Method ID:
-          <input
-            id="shipping_method_id"
-            type="number"
-            name="shipping_method_id"
-            required
-          />
-        </label>
-        <br />
-        <div id="productsContainer">
-          <div
-            class="product-row"
-            style="display: flex; gap: 10px; margin: 8px 0"
-          >
-            <label
-              >Product ID:
-              <input type="number" name="product_id" required />
-            </label>
-            <label
-              >Quantity:
-              <input type="number" name="product_quantity" min="1" required />
-            </label>
-            <button
-              type="button"
-              onclick="removeProduct(this)"
-              style="color: red"
-            >
-              ✕
-            </button>
-          </div>
+  <body>
+    <!-- Shared header (always visible) -->
+    <header>
+      <div class="topbar">
+        <div class="brand">
+          <span class="dot"></span>
+          <span>webshop-najs</span>
         </div>
 
-        <button type="button" onclick="addProduct()">+ Add Product</button>
-        <button type="submit" id="submitBtn">POST</button>
-      </form>
-      <hr />
-    </main>
-    <footer>
-      <p>
-        &copy; 2026 Najs frontendprojekt.
-        <b><i>Upphovsrättsbrott beivras ej.</i></b>
-      </p>
-    </footer>
+        <button id="viewToggle">Admin</button>
+
+        <div class="loginBox">
+          <input
+            id="emailInput"
+            type="email"
+            placeholder="alice.nyberg@example.com"
+            autocomplete="email"
+          />
+          <button id="loginBtn" class="primary">Login</button>
+          <button id="logoutBtn">Logout</button>
+          <span id="userInfo">Not logged in</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============ SHOP VIEW ============ -->
+    <div id="view-shop">
+      <main class="layout">
+        <!-- Categories -->
+        <section class="panel">
+          <div class="panelHeader">
+            <h2>Categories</h2>
+          </div>
+          <div id="categoriesSide"></div>
+        </section>
+
+        <!-- Products -->
+        <section class="panel">
+          <div class="mainTop">
+            <h1 id="pageTitle">All products</h1>
+
+            <div class="searchRow">
+              <input
+                id="searchInput"
+                type="text"
+                placeholder="Search products..."
+              />
+              <button id="searchBtn" class="primary">Search</button>
+              <button id="clearBtn">Clear</button>
+            </div>
+          </div>
+
+          <div id="productsGrid"></div>
+        </section>
+
+        <!-- Cart + Checkout -->
+        <section class="panel cartPanel">
+          <div class="panelHeader">
+            <h2>Cart & Checkout</h2>
+          </div>
+
+          <div class="cartBody">
+            <div>
+              <label for="addressSelect">Shipping address</label>
+              <select id="addressSelect">
+                <option value="">Login to see addresses</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="shippingSelect">Shipping method</label>
+              <select id="shippingSelect">
+                <option value="">Loading shipping methods...</option>
+              </select>
+            </div>
+
+            <div id="cartItems"></div>
+
+            <div id="cartSummary"></div>
+
+            <button id="checkoutBtn">Checkout</button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ============ ADMIN VIEW ============ -->
+    <div id="view-admin" style="display: none">
+      <main class="adminMain">
+        <h1>Najs frontend</h1>
+        <form>
+          <label>Port:<input id="port" type="number" value="3007" /></label>
+          <label
+            >Endpoint:<input id="endpoint" type="url" value="products"
+          /></label>
+          <button id="getBtn" type="submit">GET</button>
+          <label
+            >Search:<input id="searchField" type="search" name="search"
+          /></label>
+        </form>
+        <h2>Data laddad från backend:</h2>
+        <hr />
+        <table id="table"></table>
+        <hr />
+        <h2>Create Order</h2>
+        <form id="orderForm">
+          <label
+            >Customer ID:
+            <input id="customer_id" type="number" name="customer_id" required />
+          </label>
+          <label
+            >Shipping Address ID:
+            <input
+              id="shipping_address_id"
+              type="number"
+              name="shipping_address_id"
+              required
+            />
+          </label>
+          <label
+            >Shipping Method ID:
+            <input
+              id="shipping_method_id"
+              type="number"
+              name="shipping_method_id"
+              required
+            />
+          </label>
+          <br />
+          <div id="productsContainer">
+            <div
+              class="product-row"
+              style="display: flex; gap: 10px; margin: 8px 0"
+            >
+              <label
+                >Product ID:
+                <input type="number" name="product_id" required />
+              </label>
+              <label
+                >Quantity:
+                <input type="number" name="product_quantity" min="1" required />
+              </label>
+              <button
+                type="button"
+                onclick="removeProduct(this)"
+                style="color: red"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+
+          <button type="button" onclick="addProduct()">+ Add Product</button>
+          <button type="submit" id="submitBtn">POST</button>
+        </form>
+        <hr />
+      </main>
+      <footer>
+        <p>
+          &copy; 2026 Najs frontendprojekt.
+          <b><i>Upphovsrättsbrott beivras ej.</i></b>
+        </p>
+      </footer>
+    </div>
+
+    <!-- Scripts -->
+    <!-- 1) config.js MUST be first -->
+    <script src="js/config.js"></script>
+
+    <!-- 2) product page logic (categories + search + add to cart) -->
+    <script src="js/product-card.js"></script>
+
+    <!-- 3) cart logic + checkout -->
+    <script src="js/cart.js"></script>
+
+    <!-- 4) login logic (fills addressSelect + shippingSelect) -->
+    <script src="js/login.js"></script>
+
+    <!-- 5) admin logic (GET/POST for debug view) -->
+    <script src="js/admin.js"></script>
+
+    <!-- 6) view toggle -->
     <script>
-      // dynamically build request target from input field values and optional url params
-      const makeUrl = (urlParams) =>
-        `http://localhost:${port.value}/${endpoint.value}${urlParams ?? ""}`;
+      const viewToggle = document.getElementById("viewToggle");
+      const viewShop = document.getElementById("view-shop");
+      const viewAdmin = document.getElementById("view-admin");
 
-      // make table headers from data keys and paste values into rows and columns
-      const renderTable = (data) =>
-        (table.innerHTML =
-          // Kontrollera om data är tom
-          data?.length ?
-            `<tr>${Object.keys(data[0]).map((fieldName) => `<td><b>${fieldName}</b></td>`).join``}</tr>
-              ${data.map(
-                (dataRow) =>
-                  `<tr>${Object.values(dataRow).map((dataCell) => `<td>${dataCell}</td>`).join``}</tr>`,
-              ).join``}`
-          : "<tr><td>Inga matchande artiklar</td></tr>");
-
-      getBtn.addEventListener(
-        "click",
-        async (event) => (
-          event.preventDefault(),
-          renderTable(
-            await fetch(makeUrl()).then((response) => response.json()),
-          )
-        ),
-      );
-      searchField.addEventListener("input", async () =>
-        renderTable(
-          await fetch(makeUrl(`?search=${searchField.value}`)).then(
-            (response) => response.json(),
-          ),
-        ),
-      );
-
-      /* ////////////////////////////////////////////////////////////////() */
-
-      function addProduct() {
-        const container = document.getElementById("productsContainer");
-        const row = document.createElement("div");
-        row.className = "product-row";
-        row.style = "display:flex; gap:10px; margin:8px 0;";
-        row.innerHTML = `
-        <label>Product ID: <input type="number" name="product_id" required /></label>
-        <label>Quantity: <input type="number" name="product_quantity" min="1" required /></label>
-        <button type="button" onclick="removeProduct(this)" style="color:red;">✕</button>
-      `;
-        container.appendChild(row);
-      }
-
-      function removeProduct(btn) {
-        const rows = document.querySelectorAll(".product-row");
-        if (rows.length > 1) {
-          btn.parentElement.remove();
-        } else {
-          alert("At least one product is required.");
-        }
-      }
-
-      submitBtn.addEventListener("click", (event) => {
-        event.preventDefault();
-
-        // Hämtar de tre huvud-fälten
-        const customer_id = parseInt(
-          document.getElementById("customer_id").value,
-        );
-        const shipping_address_id = parseInt(
-          document.getElementById("shipping_address_id").value,
-        );
-        const shipping_method_id = parseInt(
-          document.getElementById("shipping_method_id").value,
-        );
-
-        // Samlar ihop alla produktrader till order_items
-        const rows = document.querySelectorAll(".product-row");
-        const order_items = [];
-
-        rows.forEach((row) => {
-          const inputs = row.querySelectorAll("input");
-          order_items.push({
-            product_id: parseInt(inputs[0].value),
-            product_quantity: parseInt(inputs[1].value),
-          });
-        });
-
-        // Bygger upp JSON-objektet
-        const order = {
-          customer_id: customer_id,
-          shipping_address_id: shipping_address_id,
-          shipping_method_id: shipping_method_id,
-          order_items: order_items,
-        };
-
-        console.log("Submitting order:", order);
-
-        // Använder port och endpoint från sidan, precis som GET-anropen
-        fetch(`http://localhost:${port.value}/${endpoint.value}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(order),
-        })
-          .then((res) => res.json())
-          .then((data) => console.log("Success:", data))
-          .catch((err) => console.error("Error:", err));
+      viewToggle.addEventListener("click", () => {
+        const showingShop = viewShop.style.display !== "none";
+        viewShop.style.display = showingShop ? "none" : "";
+        viewAdmin.style.display = showingShop ? "" : "none";
+        viewToggle.textContent = showingShop ? "Shop" : "Admin";
       });
     </script>
   </body>
