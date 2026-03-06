@@ -11,9 +11,9 @@ exports.getAllCategories = async (req, res) => {
 
   try {
     const [data] = await pool.query(sql, params);
-    res.status(200).send(data);
+    res.status(200).json(data);
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -34,9 +34,9 @@ exports.getAllProductsByCategoryName = async (req, res) => {
       WHERE categories.category_name = ?`,
       [req.params.category_name],
     );
-    res.status(200).send(data);
+    res.status(200).json(data);
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 

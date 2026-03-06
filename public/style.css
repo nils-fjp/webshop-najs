@@ -301,6 +301,101 @@
       cursor:pointer;
     }
 
+    /* View toggle button */
+    #viewToggle{
+      padding:10px 16px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background: var(--btn2);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:600;
+      letter-spacing:.3px;
+    }
+    #viewToggle:hover{
+      background: rgba(47,111,237,.25);
+      border-color: rgba(47,111,237,.5);
+    }
+
+    /* Admin view */
+    .adminMain{
+      max-width:900px;
+      margin:0 auto;
+      padding:24px 16px;
+    }
+    .adminMain h1{
+      margin:0 0 16px;
+      font-size:22px;
+    }
+    .adminMain h2{
+      margin:20px 0 8px;
+      font-size:16px;
+      color:var(--muted);
+    }
+    .adminMain hr{
+      border:none;
+      border-top:1px solid var(--line);
+      margin:16px 0;
+    }
+    .adminMain form{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      align-items:flex-end;
+      margin-bottom:8px;
+    }
+    .adminMain label{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .adminMain input{
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background: rgba(17,21,33,.7);
+      color:var(--text);
+      outline:none;
+    }
+    .adminMain button{
+      padding:10px 14px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background: var(--btn2);
+      color:var(--text);
+      cursor:pointer;
+    }
+    .adminMain button[type="submit"]{
+      background: var(--btn);
+      border-color: rgba(47,111,237,.6);
+      font-weight:600;
+    }
+    .adminMain table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:13px;
+    }
+    .adminMain td{
+      padding:8px 10px;
+      border:1px solid var(--line);
+    }
+    .adminMain tr:first-child td{
+      background: rgba(47,111,237,.1);
+      font-weight:600;
+    }
+
+    #view-admin footer{
+      max-width:900px;
+      margin:24px auto 0;
+      padding:16px;
+      text-align:center;
+      color:var(--muted);
+      font-size:13px;
+      border-top:1px solid var(--line);
+    }
+
     @media (max-width: 1100px){
       .layout{ grid-template-columns: 240px 1fr; }
       .cartPanel{ grid-column: 1 / -1; }

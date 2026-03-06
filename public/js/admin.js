@@ -1,25 +1,36 @@
-const renderTable = (data) => {
-  table.innerHTML =
-    `<tr>${Object.keys(data[0]).map((name) => `<td><b>${name}</b></td>`)
-      .join``}</tr>` +
-    data.map(
-      (row) =>
-        `<tr>${Object.values(row).map((col) => `<td>${col}</td>`).join``}</tr>`,
-    ).join``;
-};
-getBtn.addEventListener("click", async (event) => {
-  event.preventDefault();
-  data = await fetch(`http://localhost:${port.value}/${endpoint.value}`).then(
-    (res) => res.json(),
-  );
-  renderTable(data);
-});
-searchField.addEventListener("input", async () => {
-  data = await fetch(
-    `http://localhost:${port.value}/${endpoint.value}?search=${searchField.value}`,
-  ).then((res) => res.json());
-  renderTable(data);
-});
+// .pucblic/js/admin.js
+// applies to public/index.html, loaded from <script> tag in body
+
+// dynamically build request target from input field values and optional url params
+const makeUrl = (urlParams) =>
+  `http://localhost:${port.value}/${endpoint.value}${urlParams ?? ""}`;
+
+// make table headers from data keys and paste values into rows and columns
+const renderTable = (data) =>
+  (table.innerHTML =
+    // Kontrollera om data är tom
+    data?.length ?
+      `<tr>${Object.keys(data[0]).map((fieldName) => `<td><b>${fieldName}</b></td>`).join``}</tr>
+              ${data.map(
+                (dataRow) =>
+                  `<tr>${Object.values(dataRow).map((dataCell) => `<td>${dataCell}</td>`).join``}</tr>`,
+              ).join``}`
+    : "<tr><td>Inga matchande artiklar</td></tr>");
+
+getBtn.addEventListener(
+  "click",
+  async (event) => (
+    event.preventDefault(),
+    renderTable(await fetch(makeUrl()).then((response) => response.json()))
+  ),
+);
+searchField.addEventListener("input", async () =>
+  renderTable(
+    await fetch(makeUrl(`?search=${searchField.value}`)).then((response) =>
+      response.json(),
+    ),
+  ),
+);
 
 /* ////////////////////////////////////////////////////////////////() */
 
@@ -29,10 +40,10 @@ function addProduct() {
   row.className = "product-row";
   row.style = "display:flex; gap:10px; margin:8px 0;";
   row.innerHTML = `
-      <label>Product ID: <input type="number" name="product_id" required /></label>
-      <label>Quantity: <input type="number" name="product_quantity" min="1" required /></label>
-      <button type="button" onclick="removeProduct(this)" style="color:red;">✕</button>
-    `;
+        <label>Product ID: <input type="number" name="product_id" required /></label>
+        <label>Quantity: <input type="number" name="product_quantity" min="1" required /></label>
+        <button type="button" onclick="removeProduct(this)" style="color:red;">✕</button>
+      `;
   container.appendChild(row);
 }
 
