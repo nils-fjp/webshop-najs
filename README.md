@@ -2,12 +2,11 @@
 
 Gruppmedlemmar:
 
-
 Webbshop-backend med frontend, byggt som grupprojekt i kursen _Databaser (40 YP)_ vid Teknikhögskolan.
 
 REST-API i Express 5 kopplat till en MySQL-databas, med en frontend som har en shop-vy för kunder och en admin-vy för testning/debugging.
 
-**Gruppmedlemmar:** 
+**Gruppmedlemmar:**
 
 - **N**ils Paulsson (nils-fjp)
 - **A**dli Anabtawi (adlianabtawi)
@@ -27,39 +26,39 @@ REST-API i Express 5 kopplat till en MySQL-databas, med en frontend som har en s
 
 1. Klona repot:
 
-```bash
-git clone https://github.com/nils-fjp/webshop-najs.git
-cd webshop-najs
-```
+   ```bash
+   git clone https://github.com/nils-fjp/webshop-najs.git
+   cd webshop-najs
+   ```
 
 2. Installera beroenden:
 
-```bash
-npm install
-```
+   ```bash
+   npm install
+   ```
 
 3. Skapa en `.env`-fil i rotkatalogen:
 
-```env
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=ditt_lösenord
-DB_NAME=najs-db
-PORT=3007
-```
+   ```env
+   DB_HOST=localhost
+   DB_USER=root
+   DB_PASSWORD=ditt_lösenord
+   DB_NAME=najs-db
+   PORT=3007
+   ```
 
 4. Skapa databasen och seed-datan genom att köra SQL-skriptet:
 
-```bash
-mysql -u root -p < generate-najs-db.sql
-```
+   ```bash
+   mysql -u root -p < generate-najs-db.sql
+   ```
 
 5. Starta servern:
 
-```bash
-npm run dev    # med nodemon (auto-restart vid filändringar)
-npm start      # utan nodemon
-```
+   ```bash
+   npm run dev    # med nodemon (auto-restart vid filändringar)
+   npm start      # utan nodemon
+   ```
 
 6. Öppna `public/test.html` direkt i webbläsaren (frontend servas inte av Express-servern).
 
@@ -67,7 +66,7 @@ npm start      # utan nodemon
 
 ## Projektstruktur
 
-```
+```text
 webshop-najs/
 ├── index.js                    # Express-server: middleware, route-montering
 ├── generate-najs-db.sql        # Databasschema + testdata (20 rader per tabell)
@@ -153,7 +152,7 @@ Databasen genereras av `generate-najs-db.sql` som skapar databasen `najs-db`, 12
 
 ### Relationer
 
-```
+```text
 customers 1───* customer_addresses
 customers 1───1 customer_passwords
 customers 1───* orders
