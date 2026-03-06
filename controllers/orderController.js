@@ -36,6 +36,12 @@ exports.createOrder = async (req, res) => {
     // kopiera request body till manipulerbar variabel för validering och lagring innan ordern skapas
     const orderBody = req.body;
 
+    // filtrera bort orderrader med product_quantity 0
+    orderBody.order_items = orderBody.order_items.filter(item => item.product_quantity > 0);
+    if (!orderBody.order_items.length) {
+      return res.status(400).json({ error: "No items with quantity > 0" });
+    }
+
     console.log("initial orderBody variable: ", orderBody); // debug
 
     // initialisera saknade värden i orderBody och tilldela nya
@@ -168,7 +174,7 @@ exports.createOrder = async (req, res) => {
     res.status(201).send(`Order created with order_id: ${orderBody.order_id} `);
   } catch (err) {
     if (connection) await connection.rollback();
-    res.status(500).send(err);
+    res.status(500).json({ error: "Internal server error" });
   } finally {
     if (connection) connection.release();
   }
@@ -242,9 +248,9 @@ exports.getOrdersByCustomerId = async (req, res) => {
       WHERE customers.customer_id = ?`,
       [req.params.customer_id],
     );
-    res.status(200).send(data);
+    res.status(200).json(data);
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 

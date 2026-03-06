@@ -19,7 +19,7 @@ exports.getAllProducts = async (req, res) => {
     const [data] = await pool.query(sql, params);
     res.status(200).json(data);
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -56,8 +56,8 @@ exports.getProductById = async (req, res) => {
       `SELECT * FROM products WHERE product_id = ?`,
       [req.params.product_id],
     );
-    res.status(200).send(data);
+    res.status(200).json(data);
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

@@ -36,9 +36,9 @@ exports.getAllOrders = async (req, res) => {
       JOIN shipping_methods ON orders.shipping_method_id = shipping_methods.shipping_methods_id
       ORDER BY orders.order_date DESC`,
     );
-    res.status(200).send(data);
+    res.status(200).json(data);
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -79,9 +79,9 @@ exports.getOrderById = async (req, res) => {
       WHERE orders.order_id = ?`,
       [req.params.order_id],
     );
-    res.status(200).send(data);
+    res.status(200).json(data);
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -105,7 +105,7 @@ exports.deleteProducts = async (req, res) => {
     }
     res.status(200).send(`Product ${req.body.product_id} deleted. `);
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -157,7 +157,7 @@ exports.patchProducts = async (req, res) => {
     );
     res.status(200).send(`Product ${req.body.product_id} updated. `);
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -188,7 +188,7 @@ exports.putProducts = async (req, res) => {
     }
     res.status(200).send(`Product ${req.body.product_id} updated. `);
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -214,7 +214,7 @@ exports.postProducts = async (req, res) => {
     );
     res.status(201).send(`Product inserted. InsertId: ${data.insertId}`);
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -232,7 +232,7 @@ exports.deleteProductById = async (req, res) => {
     }
     res.status(200).send(`Product ${req.params.product_id} deleted. `);
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -269,7 +269,7 @@ exports.patchProductById = async (req, res) => {
     }
     res.status(200).send(`Product ${req.params.product_id} updated. `);
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -297,7 +297,7 @@ exports.postProductById = async (req, res) => {
     );
     res.status(201).send(`Product inserted. insertId: ${data.insertId} `);
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -323,6 +323,7 @@ exports.putProductById = async (req, res) => {
     );
     res.status(200).send(`Product ${req.params.product_id} updated. `);
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
+

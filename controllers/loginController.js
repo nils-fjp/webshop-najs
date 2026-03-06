@@ -4,7 +4,7 @@ const pool = require("../config/db");
 exports.login = async (req, res) => {
   const { email } = req.body;
 
-  if (!email) return res.status(400).send({ message: "Email is required" });
+  if (!email) return res.status(400).json({ message: "Email is required" });
 
   let connection;
   try {
@@ -14,11 +14,11 @@ exports.login = async (req, res) => {
       [email]
     );
 
-    if (!rows.length) return res.status(401).send({ message: "User not found" });
+    if (!rows.length) return res.status(401).json({ message: "User not found" });
 
     res.status(200).json(rows[0]);
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).json({ error: "Internal server error" });
   } finally {
     if (connection) connection.release();
   }
