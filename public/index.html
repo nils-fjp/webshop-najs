@@ -13,22 +13,17 @@
     <main>
       <form>
         <label>Port:<input id="port" type="number" value="3007" /></label>
-        <label>Endpoint:<input id="endpoint" value="products" /></label>
+        <label
+          >Endpoint:<input id="endpoint" type="url" value="products"
+        /></label>
         <button id="getBtn" type="submit">GET</button>
         <label
-          >Search:<input id="searchField" type="search" name="search" /><button
-            id="searchBtn"
-            type="submit"
-          >
-            Sök
-          </button></label
-        >
+          >Search:<input id="searchField" type="search" name="search"
+        /></label>
       </form>
-
       <h2>Data laddad från backend:</h2>
       <hr />
       <table id="table"></table>
-
       <hr />
       <h2>Create Order</h2>
       <form id="orderForm">
@@ -80,7 +75,7 @@
         </div>
 
         <button type="button" onclick="addProduct()">+ Add Product</button>
-        <button type="submit" id="submitBtn">Post</button>
+        <button type="submit" id="submitBtn">POST</button>
       </form>
       <hr />
     </main>
@@ -91,35 +86,38 @@
       </p>
     </footer>
     <script>
-      const renderTable = (data) => {
-        // Kontrollera om data är tom
-        if (!data || data.length === 0) {
-          table.innerHTML = "<tr><td>Inga matchande artiklar</td></tr>";
-          return;
-        }
-        table.innerHTML =
-          `<tr>${Object.keys(data[0]).map((name) => `<td><b>${name}</b></td>`)
-            .join``}</tr>` +
-          data.map(
-            (row) =>
-              `<tr>${Object.values(row).map((col) => `<td>${col}</td>`)
-                .join``}</tr>`,
-          ).join``;
-      };
+      // dynamically build request target from input field values and optional url params
+      const makeUrl = (urlParams) =>
+        `http://localhost:${port.value}/${endpoint.value}${urlParams ?? ""}`;
 
-      getBtn.addEventListener("click", async (event) => {
-        event.preventDefault();
-        data = await fetch(
-          `http://localhost:${port.value}/${endpoint.value}`,
-        ).then((res) => res.json());
-        renderTable(data);
-      });
-      searchField.addEventListener("input", async () => {
-        data = await fetch(
-          `http://localhost:${port.value}/${endpoint.value}?search=${searchField.value}`,
-        ).then((res) => res.json());
-        renderTable(data);
-      });
+      // make table headers from data keys and paste values into rows and columns
+      const renderTable = (data) =>
+        (table.innerHTML =
+          // Kontrollera om data är tom
+          data?.length ?
+            `<tr>${Object.keys(data[0]).map((fieldName) => `<td><b>${fieldName}</b></td>`).join``}</tr>
+              ${data.map(
+                (dataRow) =>
+                  `<tr>${Object.values(dataRow).map((dataCell) => `<td>${dataCell}</td>`).join``}</tr>`,
+              ).join``}`
+          : "<tr><td>Inga matchande artiklar</td></tr>");
+
+      getBtn.addEventListener(
+        "click",
+        async (event) => (
+          event.preventDefault(),
+          renderTable(
+            await fetch(makeUrl()).then((response) => response.json()),
+          )
+        ),
+      );
+      searchField.addEventListener("input", async () =>
+        renderTable(
+          await fetch(makeUrl(`?search=${searchField.value}`)).then(
+            (response) => response.json(),
+          ),
+        ),
+      );
 
       /* ////////////////////////////////////////////////////////////////() */
 
@@ -129,10 +127,10 @@
         row.className = "product-row";
         row.style = "display:flex; gap:10px; margin:8px 0;";
         row.innerHTML = `
-      <label>Product ID: <input type="number" name="product_id" required /></label>
-      <label>Quantity: <input type="number" name="product_quantity" min="1" required /></label>
-      <button type="button" onclick="removeProduct(this)" style="color:red;">✕</button>
-    `;
+        <label>Product ID: <input type="number" name="product_id" required /></label>
+        <label>Quantity: <input type="number" name="product_quantity" min="1" required /></label>
+        <button type="button" onclick="removeProduct(this)" style="color:red;">✕</button>
+      `;
         container.appendChild(row);
       }
 
