@@ -12,7 +12,6 @@ const loginRoutes = require("./routes/loginRoutes");
 const addressRoutes = require("./routes/addressRoutes");
 const shippingRoutes = require("./routes/shippingRoutes");
 
-
 app.use(cors());
 app.use(express.json());
 
