@@ -124,9 +124,9 @@ curl -X PATCH http://localhost:3007/admin/products \
 
 */
 
-// updatera produkt via PATCH med product_id i request body
+// update produkt via PATCH med product_id i request body
 exports.patchProducts = async (req, res) => {
-  if (isNaN(Number(req.body.product_id)) || req.body.product_id === undefined) {
+  if (isNaN(Number(req.body.product_id))) {
     return res.status(400).send("product_id must be a valid number. ");
   }
   const updates = {};
@@ -218,7 +218,7 @@ exports.postProducts = async (req, res) => {
   }
 };
 
-/* admin products by route params */
+/* admin product mgmt by route params */
 
 // delete product by product_id in route params
 exports.deleteProductById = async (req, res) => {
@@ -235,6 +235,7 @@ exports.deleteProductById = async (req, res) => {
     res.status(500).send(err);
   }
 };
+
 // update product via patch by product_id in route params
 exports.patchProductById = async (req, res) => {
   const updates = {};
@@ -299,6 +300,7 @@ exports.postProductById = async (req, res) => {
     res.status(500).send(err);
   }
 };
+
 // update product via put by product_id in route params
 exports.putProductById = async (req, res) => {
   try {
