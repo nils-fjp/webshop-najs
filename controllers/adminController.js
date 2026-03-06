@@ -124,7 +124,7 @@ curl -X PATCH http://localhost:3007/admin/products \
 
 */
 
-// update produkt via PATCH med product_id i request body
+// UPDATE produkt via PATCH med product_id i request body
 exports.patchProducts = async (req, res) => {
   if (isNaN(Number(req.body.product_id))) {
     return res.status(400).send("product_id must be a valid number. ");
