@@ -1,10 +1,18 @@
 # webshop-najs
 
-Webbshop-backend med frontend, byggt som grupprojekt i kursen Databaser vid Teknikhögskolan.
+Gruppmedlemmar:
+
+
+Webbshop-backend med frontend, byggt som grupprojekt i kursen _Databaser (40 YP)_ vid Teknikhögskolan.
 
 REST-API i Express 5 kopplat till en MySQL-databas, med en frontend som har en shop-vy för kunder och en admin-vy för testning/debugging.
 
-**Gruppmedlemmar:** Nils, Adli, Jose, Sam
+**Gruppmedlemmar:** 
+
+- **N**ils Paulsson (nils-fjp)
+- **A**dli Anabtawi (adlianabtawi)
+- **J**osé Muñoz (JoseMunozO)
+- **S**am Shaalan (samshaalan)
 
 ---
 
