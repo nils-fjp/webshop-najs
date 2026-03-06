@@ -1,8 +1,6 @@
 # webshop-najs
 
-Gruppmedlemmar:
-
-Webbshop-backend med frontend, byggt som grupprojekt i kursen _Databaser (40 YP)_ vid Teknikhögskolan.
+Webbshop-backend med frontend, byggt som gruppprojekt för kursen _Databaser (40 YP)_ vid Teknikhögskolan.
 
 REST-API i Express 5 kopplat till en MySQL-databas, med en frontend som har en shop-vy för kunder och en admin-vy för testning/debugging.
 
@@ -60,7 +58,7 @@ REST-API i Express 5 kopplat till en MySQL-databas, med en frontend som har en s
    npm start      # utan nodemon
    ```
 
-6. Öppna `public/test.html` direkt i webbläsaren (frontend servas inte av Express-servern).
+6. Öppna `public/index.html` direkt i webbläsaren med exv. LiveServer (frontend servas inte av Express-servern).
 
 ---
 
@@ -94,8 +92,7 @@ webshop-najs/
 │   └── shippingRoutes.js       # /shipping-methods
 │
 ├── public/                     # Frontend (öppnas direkt i webbläsaren)
-│   ├── test.html               # Huvudsida: shop-vy + admin-vy med toggle-knapp
-│   ├── index.html              # Fristående admin/debug-verktyg
+│   ├── index.html              # Huvudsida: shop-vy + admin-vy med toggle-knapp
 │   ├── style.css               # Dark theme (CSS custom properties)
 │   └── js/
 │       ├── config.js           # Globala inställningar (API-URL, localStorage-nycklar)
@@ -105,7 +102,7 @@ webshop-najs/
 │       └── admin.js            # Admin-vyns formulär (GET/POST mot valfri endpoint)
 │
 └── docs/                       # Kursdokumentation
-    ├── inlamningsuppgift.md    # User stories / kurskriterier
+    ├── inlamningsuppgift.md    # Användarberättelser / kurskriterier
     ├── redovisningsinstruktioner.md
     └── 2026-03-04-curl-db.txt  # curl-exempel för alla endpoints
 ```
@@ -128,13 +125,13 @@ Databasen genereras av `generate-najs-db.sql` som skapar databasen `najs-db`, 12
 
 **Produkter:**
 
-| Tabell               | Beskrivning                                                    |
-| -------------------- | -------------------------------------------------------------- |
-| `products`           | Produkter (namn, kod, pris, lagersaldo, beskrivning)           |
-| `categories`         | Produktkategorier                                              |
-| `product_categories` | Kopplingstabell: produkter <-> kategorier (many-to-many)       |
-| `tags`               | Taggar med typ (label, use-case, tier, stock-status, seasonal) |
-| `product_tags`       | Kopplingstabell: produkter <-> taggar (many-to-many)           |
+| Tabell               | Beskrivning                                              |
+| -------------------- | -------------------------------------------------------- |
+| `products`           | Produkter (namn, kod, pris, lagersaldo, beskrivning)     |
+| `categories`         | Produktkategorier                                        |
+| `product_categories` | Kopplingstabell: produkter <-> kategorier (many-to-many) |
+| `tags`               | Taggar med `tag_type_id` (int) och `tag_content`         |
+| `product_tags`       | Kopplingstabell: produkter <-> taggar (many-to-many)     |
 
 **Ordrar:**
 
@@ -210,7 +207,7 @@ Denna uppdelning gör att varje fil har ett tydligt ansvar och att endpoints fö
 
 #### Kundendpoints
 
-| Metod  | sökväg                              | Beskrivning                          |
+| Metod  | Sökväg                              | Beskrivning                          |
 | ------ | ----------------------------------- | ------------------------------------ |
 | `GET`  | `/products`                         | Alla produkter (stödjer `?search=`)  |
 | `GET`  | `/products/:product_id`             | En enskild produkt                   |
@@ -224,7 +221,7 @@ Denna uppdelning gör att varje fil har ett tydligt ansvar och att endpoints fö
 
 #### Admin-endpoints
 
-| Metod                   | sökväg                        | Beskrivning                          |
+| Metod                   | Sökväg                        | Beskrivning                          |
 | ----------------------- | ----------------------------- | ------------------------------------ |
 | `GET`                   | `/admin/products`             | Alla produkter                       |
 | `GET`                   | `/admin/products/:product_id` | En produkt                           |
@@ -238,7 +235,7 @@ Denna uppdelning gör att varje fil har ett tydligt ansvar och att endpoints fö
 
 Admin-endpoints stödjer både `product_id` i request body och som route parameter -- båda varianter finns implementerade.
 
-Se `docs/2026-03-04-curl-db.txt` för curl-exempel på alla endpoints.
+Se `docs/2026-03-04-curl-db.txt` för curl-exempel för alla endpoints.
 
 ### Viktiga backend-funktioner
 
@@ -253,7 +250,7 @@ Se `docs/2026-03-04-curl-db.txt` för curl-exempel på alla endpoints.
 
 Om något steg misslyckas rullas hela transaktionen tillbaka.
 
-**Dynamisk PATCH:** Admin PATCH-endpointen bygger sin SQL `SET`-klausul dynamiskt utifrån vilka fält som skickas i request body. Det går att uppdatera ett enstaka fält utan att behöva skicka alla.
+**Dynamisk PATCH:** Admin PATCH-endpointen bygger sin SQL `SET`-fras dynamiskt utifrån vilka fält som skickas i request body. Det går att uppdatera ett enstaka fält utan att behöva skicka alla.
 
 ---
 
@@ -261,21 +258,21 @@ Om något steg misslyckas rullas hela transaktionen tillbaka.
 
 Frontenden ligger i `public/` och öppnas direkt som filer i webbläsaren (den servas inte av Express-servern).
 
-### Huvudsida (`test.html`)
+### Huvudsida (`index.html`)
 
 Huvudsidan har en **delad header** som alltid är synlig, med en toggle-knapp som växlar mellan två vyer:
 
 **Shop-vy** (standardvy):
 
 - 3-kolumnslayout med CSS Grid
-- **Vanster:** Kategorisidofält -- klicka på en kategori för att filtrera produkter
+- **Vänster:** Kategorisidofält -- klicka på en kategori för att filtrera produkter
 - **Mitten:** Produktrutnät med sökfält och sök-/rensa-knappar
-- **Hoger:** Varukorg med adress- och fraktval, summering, och checkout-knapp
+- **Höger:** Varukorg med adress- och fraktval, summering, och checkout-knapp
 
 **Admin-vy** (debug/testverktyg):
 
 - Formulär för att skicka GET-anrop mot valfri endpoint och visa resultatet i en tabell
-- Formulär för att skapa ordrar med POST (customer_id, adress, fraktmetod, )
+- Formulär för att skapa ordrar med POST (customer_id, adress, fraktmetod, orderrader)
 
 ### JavaScript-arkitektur
 
@@ -285,9 +282,9 @@ Frontenden är uppdelad i 5 JavaScript-filer som laddas i ordning:
 2. **`product-card.js`** -- laddar kategorier, hanterar sökning, renderar produktkort, lägg-till-i-varukorg (IIFE)
 3. **`cart.js`** -- renderar varukorgen, tar bort varor, checkout-logik, exponerar `renderCart` på `window.APP` (IIFE)
 4. **`login.js`** -- inloggning/utloggning via e-post, laddar adresser och fraktmetoder (IIFE)
-5. **`admin.js`** -- kopplar admin-vyns GET/POST/search-formulär
+5. **`admin.js`** -- kopplar admin-vyns GET/POST/search-formulär (top-level script, inte IIFE)
 
-Modulerna är self-contained IIFEs och kommunicerar via `window.APP`-objektet. Varukorgen sparas i `localStorage` och behövs därför ingen inloggning.
+Modulerna kommunicerar via `window.APP`-objektet. `product-card.js`, `cart.js` och `login.js` är självständiga IIFEs, medan `admin.js` körs som top-level script. Varukorgen sparas i `localStorage` och det behövs därför ingen inloggning.
 
 ### Styling
 
@@ -297,21 +294,21 @@ Modulerna är self-contained IIFEs och kommunicerar via `window.APP`-objektet. V
 
 ## Uppfyllda kurskriterier
 
-Baserat på user stories i `docs/inlamningsuppgift.md`.
+Baserat på användarberättelser i `docs/inlamningsuppgift.md`.
 
 ### Obligatoriska (alla uppfyllda)
 
 **Kundperspektiv:**
 
 - Se alla produkter och produktdetaljer
-- Slutfora köp / lägga order
+- Slutföra köp / lägga order
 - Se orderhistorik
 - Filtrera produkter efter kategori
 - Söka efter produkter
 
 **Adminperspektiv:**
 
-- lägga till, uppdatera och ta bort produkter (fullständig CRUD)
+- Lägga till, uppdatera och ta bort produkter (fullständig CRUD)
 - Se alla ordrar
 
 ### Utökade funktioner
