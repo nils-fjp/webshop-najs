@@ -105,12 +105,10 @@ webshop-najs/
 │       ├── login.js            # Inloggning/utloggning, adresser, fraktmetoder
 │       └── admin.js            # Admin-vyns formulär (GET/POST mot valfri endpoint)
 │
-├── docs/                       # Kursdokumentation
-│   ├── inlamningsuppgift.md    # User stories / kurskriterier
-│   ├── redovisningsinstruktioner.md
-│   └── 2026-03-04-curl-db.txt  # curl-exempel för alla endpoints
-│
-└── legacy/                     # Äldre prototyper och anteckningar
+└── docs/                       # Kursdokumentation
+    ├── inlamningsuppgift.md    # User stories / kurskriterier
+    ├── redovisningsinstruktioner.md
+    └── 2026-03-04-curl-db.txt  # curl-exempel för alla endpoints
 ```
 
 ---
