@@ -1,5 +1,5 @@
-// .pucblic/js/admin.js
-// applies to public/index.html, loaded from <script> tag in body
+// public/js/admin.js
+// applies to public/index.html, previously written inside <script> tag in body on test page
 
 // dynamically build request target from input field values and optional url params
 const makeUrl = (urlParams) =>
@@ -34,27 +34,29 @@ searchField.addEventListener("input", async () =>
 
 /* ////////////////////////////////////////////////////////////////() */
 
-function addProduct() {
+const addProduct = () => {
   const container = document.getElementById("productsContainer");
-  const row = document.createElement("div");
-  row.className = "product-row";
-  row.style = "display:flex; gap:10px; margin:8px 0;";
-  row.innerHTML = `
+  const productRow = document.createElement("div");
+  productRow.className = "product-row";
+  productRow.style = "display:flex; gap: 10px;";
+  productRow.innerHTML = `
         <label>Product ID: <input type="number" name="product_id" required /></label>
         <label>Quantity: <input type="number" name="product_quantity" min="1" required /></label>
-        <button type="button" onclick="removeProduct(this)" style="color:red;">✕</button>
+        <div style="display:flex; align-items:flex-end;">
+          <button type="button" onclick="removeProduct(this)" style="color:red;">✕</button>
+        </div>
       `;
-  container.appendChild(row);
-}
+  container.appendChild(productRow);
+};
 
-function removeProduct(btn) {
-  const rows = document.querySelectorAll(".product-row");
-  if (rows.length > 1) {
-    btn.parentElement.remove();
+const removeProduct = (removeBtn) => {
+  const productRows = document.querySelectorAll(".product-row");
+  if (productRows?.length > 1) {
+    removeBtn.closest(".product-row").remove();
   } else {
     alert("At least one product is required.");
   }
-}
+};
 
 submitBtn.addEventListener("click", (event) => {
   event.preventDefault();
@@ -69,34 +71,49 @@ submitBtn.addEventListener("click", (event) => {
   );
 
   // Samlar ihop alla produktrader till order_items
-  const rows = document.querySelectorAll(".product-row");
+  const productRows = document.querySelectorAll(".product-row");
   const order_items = [];
 
-  rows.forEach((row) => {
-    const inputs = row.querySelectorAll("input");
-    order_items.push({
-      product_id: parseInt(inputs[0].value),
-      product_quantity: parseInt(inputs[1].value),
-    });
+  productRows.forEach((productRow) => {
+    const inputs = productRow.querySelectorAll("input");
+    if (inputs[0].value && inputs[1].value) {
+      order_items.push({
+        product_id: parseInt(inputs[0].value),
+        product_quantity: parseInt(inputs[1].value),
+      });
+    }
   });
 
   // Bygger upp JSON-objektet
   const order = {
-    customer_id: customer_id,
-    shipping_address_id: shipping_address_id,
-    shipping_method_id: shipping_method_id,
-    order_items: order_items,
+    customer_id,
+    shipping_address_id,
+    shipping_method_id,
+    order_items,
   };
 
   console.log("Submitting order:", order);
 
-  // Använder port och endpoint från sidan, precis som GET-anropen
-  fetch(`http://localhost:${port.value}/${endpoint.value}`, {
+  // Använder port ~~och endpoint~~ från sidan, precis som GET-anropen
+  fetch(`http://localhost:${port.value}/orders`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(order),
   })
-    .then((res) => res.json())
-    .then((data) => console.log("Success:", data))
-    .catch((err) => console.error("Error:", err));
+    .then((res) => {
+      if (!res.ok) {
+        return res.json().then((errData) => {
+          throw new Error(errData.error || `Server error: ${res.status}`);
+        });
+      }
+      return res.json();
+    })
+    .then((data) => {
+      console.log("Success:", data);
+      alert(`Order created successfully (order_id: ${data.order_id})`);
+    })
+    .catch((err) => {
+      console.error("Error:", err);
+      alert(`Failed to create order: ${err.message}`);
+    });
 });

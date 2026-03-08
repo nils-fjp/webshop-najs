@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="data:/" type="image/x-icon" />
     <link rel="stylesheet" href="style.css" />
-    <title>Webshop</title>
+    <title>Najs Webshop</title>
   </head>
 
   <body>
@@ -14,7 +14,7 @@
       <div class="topbar">
         <div class="brand">
           <span class="dot"></span>
-          <span>webshop-najs</span>
+          <span>Najs Webshop</span>
         </div>
 
         <button id="viewToggle">Admin</button>
@@ -97,7 +97,7 @@
     <!-- ============ ADMIN VIEW ============ -->
     <div id="view-admin" style="display: none">
       <main class="adminMain">
-        <h1>Najs frontend</h1>
+        <h1>Najs Frontend</h1>
         <form>
           <label>Port:<input id="port" type="number" value="3007" /></label>
           <label
@@ -138,10 +138,7 @@
           </label>
           <br />
           <div id="productsContainer">
-            <div
-              class="product-row"
-              style="display: flex; gap: 10px; margin: 8px 0"
-            >
+            <div class="product-row" style="display: flex; gap: 10px">
               <label
                 >Product ID:
                 <input type="number" name="product_id" required />
@@ -150,13 +147,15 @@
                 >Quantity:
                 <input type="number" name="product_quantity" min="1" required />
               </label>
-              <button
-                type="button"
-                onclick="removeProduct(this)"
-                style="color: red"
-              >
-                ✕
-              </button>
+              <div style="display: flex; align-items: flex-end">
+                <button
+                  type="button"
+                  onclick="removeProduct(this)"
+                  style="color: red"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
           </div>
 
