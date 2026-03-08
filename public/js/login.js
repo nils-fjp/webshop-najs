@@ -96,8 +96,8 @@
     });
 
     if (!res.ok) {
-      const txt = await res.text();
-      alert("Login failed: " + txt);
+      const errData = await res.json();
+      alert("Login failed: " + (errData.error || "Unknown error"));
       return;
     }
 

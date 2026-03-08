@@ -90,10 +90,10 @@ exports.getOrderById = async (req, res) => {
 // delete product by product_id in request body
 exports.deleteProducts = async (req, res) => {
   if (req.body.product_id === undefined) {
-    return res.status(400).send("product_id is required. ");
+    return res.status(400).json({ error: "product_id is required" });
   }
   if (isNaN(Number(req.body.product_id))) {
-    return res.status(400).send("product_id must be a number. ");
+    return res.status(400).json({ error: "product_id must be a number" });
   }
   try {
     const [data] = await pool.query(
@@ -101,9 +101,9 @@ exports.deleteProducts = async (req, res) => {
       [req.body.product_id],
     );
     if (data.affectedRows === 0) {
-      return res.status(404).send("Product not found. ");
+      return res.status(404).json({ error: "Product not found" });
     }
-    res.status(200).send(`Product ${req.body.product_id} deleted. `);
+    res.status(200).json({ message: `Product ${req.body.product_id} deleted` });
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
   }
@@ -127,7 +127,7 @@ curl -X PATCH http://localhost:3007/admin/products \
 // UPDATE produkt via PATCH med product_id i request body
 exports.patchProducts = async (req, res) => {
   if (isNaN(Number(req.body.product_id))) {
-    return res.status(400).send("product_id must be a valid number. ");
+    return res.status(400).json({ error: "product_id must be a valid number" });
   }
   const updates = {};
   const fields = [
@@ -143,7 +143,7 @@ exports.patchProducts = async (req, res) => {
     }
   });
   if (Object.keys(updates).length === 0) {
-    return res.status(400).send("No fields provided for update. ");
+    return res.status(400).json({ error: "No fields provided for update" });
   }
   const setClause = Object.keys(updates)
     .map((field) => `${field} = ?`)
@@ -155,7 +155,7 @@ exports.patchProducts = async (req, res) => {
       `UPDATE products SET ${setClause} WHERE product_id = ?`,
       values,
     );
-    res.status(200).send(`Product ${req.body.product_id} updated. `);
+    res.status(200).json({ message: `Product ${req.body.product_id} updated` });
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
   }
@@ -164,10 +164,10 @@ exports.patchProducts = async (req, res) => {
 // update product via put by product_id in request body
 exports.putProducts = async (req, res) => {
   if (req.body.product_id === undefined) {
-    return res.status(400).send("product_id required. ");
+    return res.status(400).json({ error: "product_id is required" });
   }
   if (isNaN(Number(req.body.product_id))) {
-    return res.status(400).send("product_id must be a number. ");
+    return res.status(400).json({ error: "product_id must be a number" });
   }
   try {
     const [data] = await pool.query(
@@ -184,9 +184,9 @@ exports.putProducts = async (req, res) => {
       ],
     );
     if (data.affectedRows === 0) {
-      return res.status(404).send("Product not found. ");
+      return res.status(404).json({ error: "Product not found" });
     }
-    res.status(200).send(`Product ${req.body.product_id} updated. `);
+    res.status(200).json({ message: `Product ${req.body.product_id} updated` });
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
   }
@@ -212,7 +212,7 @@ exports.postProducts = async (req, res) => {
         req.body.product_description,
       ],
     );
-    res.status(201).send(`Product inserted. InsertId: ${data.insertId}`);
+    res.status(201).json({ message: "Product created", id: data.insertId });
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
   }
@@ -228,9 +228,9 @@ exports.deleteProductById = async (req, res) => {
       [req.params.product_id],
     );
     if (data.affectedRows === 0) {
-      return res.status(404).send("Product not found. ");
+      return res.status(404).json({ error: "Product not found" });
     }
-    res.status(200).send(`Product ${req.params.product_id} deleted. `);
+    res.status(200).json({ message: `Product ${req.params.product_id} deleted` });
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
   }
@@ -252,7 +252,7 @@ exports.patchProductById = async (req, res) => {
     }
   });
   if (Object.keys(updates).length === 0) {
-    return res.status(400).send("No fields provided for update. ");
+    return res.status(400).json({ error: "No fields provided for update" });
   }
   const setClause = Object.keys(updates)
     .map((field) => `${field} = ?`)
@@ -265,9 +265,9 @@ exports.patchProductById = async (req, res) => {
       values,
     );
     if (data.affectedRows === 0) {
-      return res.status(404).send("Product not found. ");
+      return res.status(404).json({ error: "Product not found" });
     }
-    res.status(200).send(`Product ${req.params.product_id} updated. `);
+    res.status(200).json({ message: `Product ${req.params.product_id} updated` });
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
   }
@@ -295,7 +295,7 @@ exports.postProductById = async (req, res) => {
         req.body.product_description,
       ],
     );
-    res.status(201).send(`Product inserted. insertId: ${data.insertId} `);
+    res.status(201).json({ message: "Product created", id: data.insertId });
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
   }
@@ -321,7 +321,7 @@ exports.putProductById = async (req, res) => {
         req.params.product_id,
       ],
     );
-    res.status(200).send(`Product ${req.params.product_id} updated. `);
+    res.status(200).json({ message: `Product ${req.params.product_id} updated` });
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
   }

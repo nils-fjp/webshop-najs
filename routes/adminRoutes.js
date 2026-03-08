@@ -4,7 +4,7 @@ const adminController = require("../controllers/adminController");
 const productController = require("../controllers/productController");
 
 router.get("/", (req, res) => {
-  res.status(200).send("Admin route");
+  res.status(200).json({ message: "Admin route" });
 });
 
 // admin orders by request body

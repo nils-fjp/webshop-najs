@@ -42,14 +42,10 @@ exports.createOrder = async (req, res) => {
       return res.status(400).json({ error: "No items with quantity > 0" });
     }
 
-    console.log("initial orderBody variable: ", orderBody); // debug
-
     // initialisera saknade värden i orderBody och tilldela nya
     orderBody.total_price = 0;
     orderBody.order_date = new Date();
     orderBody.order_status = "created";
-
-    console.log("orderBody variable after initialization: ", orderBody); // debug
 
     // hämta angivna kunddata för adressvalidering
     const [customerData] = await connection.query(
@@ -68,9 +64,6 @@ exports.createOrder = async (req, res) => {
     if (customerData[0].length === 0) {
       throw new Error("Invalid customer_id or shipping_address_id. ");
     }
-
-    console.log("customerData variable: ", customerData); // debug
-    let selectLoopCounter = 0; // debug
 
     // hämta lagersaldo, validera, och beräkna pris på varje orderrad i beställningen
     for (const item of orderBody.order_items) {
@@ -95,14 +88,6 @@ exports.createOrder = async (req, res) => {
       // beräkna (styck- och) totalpris för order(rade)n
       item.item_price = productData[0].listing_price;
       orderBody.total_price += item.item_price * item.product_quantity;
-
-      selectLoopCounter++; // debug
-      console.log(
-        `Processing item ${selectLoopCounter}: `,
-        item,
-        "productData: ",
-        productData,
-      ); // debug
     }
 
     // skapa order med validerad data ur orderBody-objektet
@@ -126,14 +111,8 @@ exports.createOrder = async (req, res) => {
       ],
     );
 
-    console.log("orderResult: ", orderResult); // debug
-
     // fånga orderns primärnyckelvärde som nästa stegs främmande nyckel pekar mot
     orderBody.order_id = orderResult.insertId;
-
-    console.log("orderBody variable before inserting order items: ", orderBody); // debug
-    let insertLoopCounter = 0; // debug
-    let updateLoopCounter = 0; // debug
 
     // skapa en orderrad för varje produkt och bind samman med det fångade värdet
     for (const item of orderBody.order_items) {
@@ -153,9 +132,6 @@ exports.createOrder = async (req, res) => {
         ],
       );
 
-      insertLoopCounter++; // debug
-      console.log(`Inserted order item ${insertLoopCounter}: `, item); // debug
-
       // uppdatera lagersaldo genom att subtrahera antalet produkter i orderraden
       await connection.query(
         `UPDATE products 
@@ -163,15 +139,10 @@ exports.createOrder = async (req, res) => {
         WHERE product_id = ?`,
         [item.product_quantity, item.product_id],
       );
-
-      updateLoopCounter++; // debug
-      console.log(
-        `Updated stock for product ${item.product_id}, update count: ${updateLoopCounter}`,
-      ); // debug
     }
 
     await connection.commit();
-    res.status(201).send(`Order created with order_id: ${orderBody.order_id} `);
+    res.status(201).json({ message: "Order created", order_id: orderBody.order_id });
   } catch (err) {
     if (connection) await connection.rollback();
     res.status(500).json({ error: "Internal server error" });
