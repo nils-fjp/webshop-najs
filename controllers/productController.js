@@ -23,31 +23,37 @@ exports.getAllProducts = async (req, res) => {
   }
 };
 
-/*
-// Koden för frontend som hämtar alla produkter och renderar dem i en tabell, samt implementerar sökfunktionalitet:
-const renderTable = (data) => {
-        table.innerHTML =
-          `<tr>${Object.keys(data[0]).map((name) => `<td><b>${name}</b></td>`)
-            .join``}</tr>` +
-          data.map(
-            (row) =>
-              `<tr>${Object.values(row).map((col) => `<td>${col}</td>`)
-                .join``}</tr>`,
-          ).join``;
-      };
-      getBtn.addEventListener("click", async (event) => {
-        event.preventDefault();
-        data = await fetch(
-          `http://localhost:${port.value}/${endpoint.value}`,
-        ).then((res) => res.json());
-        renderTable(data);
-      });
-      searchField.addEventListener("input", async () => {
-        data = await fetch(
-          `http://localhost:${port.value}/${endpoint.value}?search=${searchField.value}`,
-        ).then((res) => res.json());
-        renderTable(data);
-      });
+/* Koden för frontend som hämtar alla produkter och renderar dem i en tabell, samt implementerar sökfunktionalitet:
+
+const makeUrl = (urlParams) =>
+  `http://localhost:${port.value}/${endpoint.value}${urlParams ?? ""}`;
+
+// make table headers from data keys and paste values into rows and columns
+const renderTable = (data) =>
+  (table.innerHTML =
+    // Kontrollera om data är tom
+    data?.length ?
+      `<tr>${Object.keys(data[0]).map((fieldName) => `<td><b>${fieldName}</b></td>`).join``}</tr>
+              ${data.map(
+                (dataRow) =>
+                  `<tr>${Object.values(dataRow).map((dataCell) => `<td>${dataCell}</td>`).join``}</tr>`,
+              ).join``}`
+    : "<tr><td>Inga matchande artiklar</td></tr>");
+
+getBtn.addEventListener(
+  "click",
+  async (event) => (
+    event.preventDefault(),
+    renderTable(await fetch(makeUrl()).then((response) => response.json()))
+  ),
+);
+searchField.addEventListener("input", async () =>
+  renderTable(
+    await fetch(makeUrl(`?search=${searchField.value}`)).then((response) =>
+      response.json(),
+    ),
+  ),
+);
 */
 
 exports.getProductById = async (req, res) => {

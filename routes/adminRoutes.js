@@ -13,18 +13,15 @@ router.get("/orders", adminController.getAllOrders);
 // admin orders by route params
 router.get("/orders/:order_id", adminController.getOrderById);
 
-// admin products by request body
+// admin products (works with both /products and /products/:product_id)
 router.get("/products", productController.getAllProducts);
-router.post("/products", adminController.postProducts);
-router.patch("/products", adminController.patchProducts);
-router.put("/products", adminController.putProducts);
-router.delete("/products", adminController.deleteProducts);
-
-// admin products by route params
 router.get("/products/:product_id", productController.getProductById);
-router.post("/products/:product_id", adminController.postProductById);
-router.patch("/products/:product_id", adminController.patchProductById);
-router.put("/products/:product_id", adminController.putProductById);
-router.delete("/products/:product_id", adminController.deleteProductById);
+router.post("/products", adminController.postProduct);
+router.patch("/products", adminController.patchProduct);
+router.patch("/products/:product_id", adminController.patchProduct);
+router.put("/products", adminController.putProduct);
+router.put("/products/:product_id", adminController.putProduct);
+router.delete("/products", adminController.deleteProduct);
+router.delete("/products/:product_id", adminController.deleteProduct);
 
 module.exports = router;

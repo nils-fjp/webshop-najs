@@ -9,7 +9,7 @@ exports.getAddressesByCustomerId = async (req, res) => {
     connection = await pool.getConnection();
     const [rows] = await connection.query(
       "SELECT * FROM customer_addresses WHERE customer_id = ?",
-      [customer_id]
+      [customer_id],
     );
     res.status(200).json(rows);
   } catch (err) {
