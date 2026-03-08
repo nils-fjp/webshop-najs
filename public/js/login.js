@@ -1,13 +1,8 @@
 // login.js (robust with IDs)
+// Requires: shared.js
 // Works even if your input is not named exactly emailInput
 
 (function () {
-  window.APP = window.APP || {
-    API_URL: "http://localhost:3007",
-    CART_KEY: "cart",
-    CURRENT_USER_KEY: "currentUser"
-  };
-
   const emailInput =
     document.getElementById("emailInput") ||
     document.querySelector('input[type="email"]') ||
@@ -15,8 +10,7 @@
 
   const loginBtn =
     document.getElementById("loginBtn") ||
-    document.querySelector('[data-action="login"]') ||
-    document.querySelector("button");
+    document.querySelector('[data-action="login"]');
 
   const logoutBtn = document.getElementById("logoutBtn");
   const userInfo = document.getElementById("userInfo");
@@ -24,24 +18,8 @@
   const addressSelect = document.getElementById("addressSelect");
   const shippingSelect = document.getElementById("shippingSelect");
 
-  function setCurrentUser(user) {
-    localStorage.setItem(window.APP.CURRENT_USER_KEY, JSON.stringify(user));
-  }
-
-  function getCurrentUser() {
-    try {
-      return JSON.parse(localStorage.getItem(window.APP.CURRENT_USER_KEY) || "null");
-    } catch {
-      return null;
-    }
-  }
-
-  function clearCurrentUser() {
-    localStorage.removeItem(window.APP.CURRENT_USER_KEY);
-  }
-
   function renderUserUI() {
-    const user = getCurrentUser();
+    const user = window.APP.getCurrentUser();
     if (!user) {
       if (userInfo) userInfo.textContent = "Not logged in";
       if (logoutBtn) logoutBtn.style.display = "none";
@@ -64,7 +42,7 @@
   async function loadAddresses() {
     if (!addressSelect) return;
 
-    const user = getCurrentUser();
+    const user = window.APP.getCurrentUser();
     if (!user) return (addressSelect.innerHTML = `<option value="">Login to see addresses</option>`);
 
     const res = await fetch(`${window.APP.API_URL}/customers/${user.customer_id}/addresses`);
@@ -76,8 +54,7 @@
       .join("");
   }
 
-  // Expose for cart.js if needed
-  window.APP.getCurrentUser = getCurrentUser;
+  // Expose for cart.js
   window.APP.loadAddresses = loadAddresses;
   window.APP.loadShippingMethods = loadShippingMethods;
 
@@ -102,7 +79,7 @@
     }
 
     const user = await res.json();
-    setCurrentUser(user);
+    window.APP.setCurrentUser(user);
 
     renderUserUI();
     await loadShippingMethods();
@@ -112,7 +89,7 @@
   });
 
   logoutBtn?.addEventListener("click", () => {
-    clearCurrentUser();
+    window.APP.clearCurrentUser();
     renderUserUI();
     if (addressSelect) addressSelect.innerHTML = `<option value="">Login to see addresses</option>`;
     alert("Logged out");

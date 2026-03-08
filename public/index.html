@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="data:/" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Young+Serif&display=swap"
+    />
     <link rel="stylesheet" href="style.css" />
     <title>Najs Webshop</title>
   </head>
@@ -138,7 +144,7 @@
           </label>
           <br />
           <div id="productsContainer">
-            <div class="product-row" style="display: flex; gap: 10px">
+            <div class="product-row">
               <label
                 >Product ID:
                 <input type="number" name="product_id" required />
@@ -151,7 +157,6 @@
                 <button
                   type="button"
                   onclick="removeProduct(this)"
-                  style="color: red"
                 >
                   ✕
                 </button>
@@ -176,19 +181,22 @@
     <!-- 1) config.js MUST be first -->
     <script src="js/config.js"></script>
 
-    <!-- 2) product page logic (categories + search + add to cart) -->
+    <!-- 2) shared helpers (cart + user) on window.APP -->
+    <script src="js/shared.js"></script>
+
+    <!-- 3) product page logic (categories + search + add to cart) -->
     <script src="js/product-card.js"></script>
 
-    <!-- 3) cart logic + checkout -->
+    <!-- 4) cart logic + checkout -->
     <script src="js/cart.js"></script>
 
-    <!-- 4) login logic (fills addressSelect + shippingSelect) -->
+    <!-- 5) login logic (fills addressSelect + shippingSelect) -->
     <script src="js/login.js"></script>
 
-    <!-- 5) admin logic (GET/POST for debug view) -->
+    <!-- 6) admin logic (GET/POST for debug view) -->
     <script src="js/admin.js"></script>
 
-    <!-- 6) view toggle -->
+    <!-- 7) view toggle -->
     <script>
       const viewToggle = document.getElementById("viewToggle");
       const viewShop = document.getElementById("view-shop");

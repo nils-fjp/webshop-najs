@@ -1,59 +1,18 @@
 // cart.js (checkout auto-fill)
-// Requires: #checkoutBtn, #cartItems, #cartSummary
+// Requires: shared.js, #checkoutBtn, #cartItems, #cartSummary
 // Optional: #addressSelect, #shippingSelect (if they exist, it populates them)
 
 (function () {
-  window.APP = window.APP || {
-    API_URL: "http://localhost:3007",
-    CART_KEY: "cart",
-    CURRENT_USER_KEY: "currentUser"
-  };
-
   const cartItemsEl = document.getElementById("cartItems");
   const cartSummaryEl = document.getElementById("cartSummary");
   const checkoutBtn = document.getElementById("checkoutBtn");
 
   // -----------------------
-  // user
+  // cart rendering
   // -----------------------
-  function getCurrentUser() {
-    if (window.APP.getCurrentUser) return window.APP.getCurrentUser();
-    try {
-      return JSON.parse(localStorage.getItem(window.APP.CURRENT_USER_KEY) || "null");
-    } catch {
-      return null;
-    }
-  }
-
-  // -----------------------
-  // cart storage
-  // -----------------------
-  function getCart() {
-    try {
-      return JSON.parse(localStorage.getItem(window.APP.CART_KEY)) || [];
-    } catch {
-      return [];
-    }
-  }
-
-  function saveCart(cart) {
-    localStorage.setItem(window.APP.CART_KEY, JSON.stringify(cart));
-  }
-
-  function clearCart() {
-    saveCart([]);
-  }
-
-  function getCartTotals() {
-    const cart = getCart();
-    const itemsCount = cart.reduce((sum, i) => sum + i.qty, 0);
-    const total = cart.reduce((sum, i) => sum + i.qty * i.listing_price, 0);
-    return { itemsCount, total };
-  }
-
   function renderCart() {
     if (!cartItemsEl || !cartSummaryEl) return;
-    const cart = getCart();
+    const cart = window.APP.getCart();
 
     if (!cart.length) {
       cartItemsEl.innerHTML = "<p>Your cart is empty.</p>";
@@ -81,7 +40,7 @@
       )
       .join("");
 
-    const { itemsCount, total } = getCartTotals();
+    const { itemsCount, total } = window.APP.getCartTotals();
     cartSummaryEl.innerHTML = `
       <p>Items: <strong>${itemsCount}</strong></p>
       <p>Total: <strong>${total.toFixed(2)} kr</strong></p>
@@ -89,74 +48,16 @@
   }
 
   // -----------------------
-  // checkout data loaders (AUTO)
-  // -----------------------
-  async function ensureShippingMethodsLoaded(shippingSelectEl) {
-    if (!shippingSelectEl) return;
-
-    // If it already has valid options, do not reload
-    if (shippingSelectEl.options.length > 0 && shippingSelectEl.value) return;
-
-    const res = await fetch(`${window.APP.API_URL}/shipping-methods`);
-    if (!res.ok) {
-      shippingSelectEl.innerHTML = `<option value="">Error loading shipping</option>`;
-      return;
-    }
-
-    const methods = await res.json();
-    if (!methods.length) {
-      shippingSelectEl.innerHTML = `<option value="">No shipping methods</option>`;
-      return;
-    }
-
-    shippingSelectEl.innerHTML = methods
-      .map((m) => `<option value="${m.shipping_methods_id}">${m.method_name}</option>`)
-      .join("");
-
-    // Select the first one
-    shippingSelectEl.value = String(methods[0].shipping_methods_id);
-  }
-
-  async function ensureAddressesLoaded(addressSelectEl, user) {
-    if (!addressSelectEl) return;
-
-    // If it already has valid options, do not reload
-    if (addressSelectEl.options.length > 0 && addressSelectEl.value) return;
-
-    const res = await fetch(`${window.APP.API_URL}/customers/${user.customer_id}/addresses`);
-    if (!res.ok) {
-      addressSelectEl.innerHTML = `<option value="">Error loading addresses</option>`;
-      return;
-    }
-
-    const addresses = await res.json();
-    if (!addresses.length) {
-      addressSelectEl.innerHTML = `<option value="">No addresses found</option>`;
-      return;
-    }
-
-    addressSelectEl.innerHTML = addresses
-      .map(
-        (a) =>
-          `<option value="${a.address_id}">${a.address}${a.city ? `, ${a.city}` : ""}</option>`
-      )
-      .join("");
-
-    // Select the first one
-    addressSelectEl.value = String(addresses[0].address_id);
-  }
-
-  // -----------------------
   // checkout
   // -----------------------
   checkoutBtn?.addEventListener("click", async () => {
-    const user = getCurrentUser();
+    const user = window.APP.getCurrentUser();
     if (!user) {
       alert("You must login first!");
       return;
     }
 
-    const cart = getCart();
+    const cart = window.APP.getCart();
     if (!cart.length) {
       alert("Cart is empty!");
       return;
@@ -170,9 +71,13 @@
       return;
     }
 
-    // ✅ Auto-fill + auto-select first option
-    await ensureShippingMethodsLoaded(shippingSelectEl);
-    await ensureAddressesLoaded(addressSelectEl, user);
+    // Auto-fill selects if not already populated (uses loaders from login.js)
+    if (!shippingSelectEl.value && window.APP.loadShippingMethods) {
+      await window.APP.loadShippingMethods();
+    }
+    if (!addressSelectEl.value && window.APP.loadAddresses) {
+      await window.APP.loadAddresses();
+    }
 
     const shipping_address_id = Number(addressSelectEl.value);
     const shipping_method_id = Number(shippingSelectEl.value);
@@ -203,15 +108,15 @@
     });
 
     if (!res.ok) {
-      const errText = await res.text();
-      alert("Order failed: " + errText);
+      const errData = await res.json();
+      alert("Order failed: " + (errData.error || "Unknown error"));
       return;
     }
 
-    const okText = await res.text();
-    clearCart();
+    const data = await res.json();
+    window.APP.clearCart();
     renderCart();
-    alert(okText);
+    alert(data.message || "Order created!");
   });
 
   // Expose so product-card.js can trigger a re-render after adding items
@@ -222,8 +127,8 @@
     const btn = e.target.closest(".removeBtn");
     if (!btn) return;
     const id = Number(btn.dataset.id);
-    const cart = getCart().filter((i) => i.product_id !== id);
-    saveCart(cart);
+    const cart = window.APP.getCart().filter((i) => i.product_id !== id);
+    window.APP.saveCart(cart);
     renderCart();
   });
 

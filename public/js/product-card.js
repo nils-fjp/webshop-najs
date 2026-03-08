@@ -1,13 +1,7 @@
 // product-card.js (categories + search + add to cart)
-// Requires: #categoriesSide, #productsGrid, #pageTitle, #searchInput, #searchBtn, #clearBtn
+// Requires: shared.js, #categoriesSide, #productsGrid, #pageTitle, #searchInput, #searchBtn, #clearBtn
 
 (function () {
-  window.APP = window.APP || {
-    API_URL: "http://localhost:3007",
-    CART_KEY: "cart",
-    CURRENT_USER_KEY: "currentUser"
-  };
-
   const categoriesSide = document.getElementById("categoriesSide");
   const grid = document.getElementById("productsGrid");
   const pageTitle = document.getElementById("pageTitle");
@@ -21,22 +15,11 @@
 
   let activeCategoryName = ""; // "" = All
   let searchTerm = "";
+  let lastRenderedProducts = [];
 
-  // ---- CART helpers (simple) ----
-  function getCart() {
-    try {
-      return JSON.parse(localStorage.getItem(window.APP.CART_KEY)) || [];
-    } catch {
-      return [];
-    }
-  }
-
-  function saveCart(cart) {
-    localStorage.setItem(window.APP.CART_KEY, JSON.stringify(cart));
-  }
-
+  // ---- CART ----
   function addToCart(product) {
-    const cart = getCart();
+    const cart = window.APP.getCart();
     const existing = cart.find((i) => i.product_id === product.product_id);
 
     if (existing) existing.qty += 1;
@@ -49,7 +32,7 @@
       });
     }
 
-    saveCart(cart);
+    window.APP.saveCart(cart);
     if (window.APP.renderCart) window.APP.renderCart();
     alert("Added to cart!");
   }
@@ -96,35 +79,23 @@
     let products = [];
 
     if (!activeCategoryName) {
-      // All products (with backend search)
       const url = new URL(`${window.APP.API_URL}/products`);
       if (searchTerm) url.searchParams.set("search", searchTerm);
-
       const res = await fetch(url);
-      if (!res.ok) {
-        grid.innerHTML = `<p>Error loading products (${res.status})</p>`;
-        return;
-      }
+      if (!res.ok) return (grid.innerHTML = `<p>Error loading products (${res.status})</p>`);
       products = await res.json();
     } else {
-      // Products by category (current endpoint)
       const url = `${window.APP.API_URL}/categories/${encodeURIComponent(activeCategoryName)}`;
       const res = await fetch(url);
-      if (!res.ok) {
-        grid.innerHTML = `<p>Error loading category products (${res.status})</p>`;
-        return;
-      }
-
+      if (!res.ok) return (grid.innerHTML = `<p>Error loading category products (${res.status})</p>`);
       products = await res.json();
-
-      // Simple frontend search
       if (searchTerm) {
         const s = searchTerm.toLowerCase();
-        products = products.filter((p) =>
-          (p.product_name ?? "").toLowerCase().includes(s)
-        );
+        products = products.filter((p) => (p.product_name ?? "").toLowerCase().includes(s));
       }
     }
+
+    lastRenderedProducts = products;
 
     if (!products.length) {
       grid.innerHTML = `<p>No products found.</p>`;
@@ -161,60 +132,6 @@
     searchTerm = "";
     reloadProducts();
   });
-
-  grid.addEventListener("click", (e) => {
-    const btn = e.target.closest(".addBtn");
-    if (!btn) return;
-
-    const id = Number(btn.dataset.id);
-
-    // We could pull the product from rendered HTML (name/price from DOM), but avoid that.
-    // Better option: fetch it again (slower). Here we keep it simple with a quick in-memory map.
-    // Simple approach: keep the latest loaded products in a global variable.
-    // If /products/:id exists, fetching by id is another valid path.
-  });
-
-  // To make add-to-cart work without an extra endpoint, store the latest rendered products:
-  let lastRenderedProducts = [];
-  const originalReload = reloadProducts;
-  reloadProducts = async function () {
-    await originalReload();
-    // Do not rebuild lastRenderedProducts with an extra request; set it before rendering.
-  };
-
-  // Slight rewrite: intercept render and store products
-  const _reloadProducts = reloadProducts;
-  reloadProducts = async function () {
-    pageTitle.textContent = activeCategoryName || "All products";
-
-    let products = [];
-
-    if (!activeCategoryName) {
-      const url = new URL(`${window.APP.API_URL}/products`);
-      if (searchTerm) url.searchParams.set("search", searchTerm);
-      const res = await fetch(url);
-      if (!res.ok) return (grid.innerHTML = `<p>Error loading products (${res.status})</p>`);
-      products = await res.json();
-    } else {
-      const url = `${window.APP.API_URL}/categories/${encodeURIComponent(activeCategoryName)}`;
-      const res = await fetch(url);
-      if (!res.ok) return (grid.innerHTML = `<p>Error loading category products (${res.status})</p>`);
-      products = await res.json();
-      if (searchTerm) {
-        const s = searchTerm.toLowerCase();
-        products = products.filter((p) => (p.product_name ?? "").toLowerCase().includes(s));
-      }
-    }
-
-    lastRenderedProducts = products;
-
-    if (!products.length) {
-      grid.innerHTML = `<p>No products found.</p>`;
-      return;
-    }
-
-    grid.innerHTML = products.map(renderProductCard).join("");
-  };
 
   grid.addEventListener("click", (e) => {
     const btn = e.target.closest(".addBtn");
