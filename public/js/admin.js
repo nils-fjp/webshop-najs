@@ -92,8 +92,6 @@ submitBtn.addEventListener("click", (event) => {
     order_items,
   };
 
-  console.log("Submitting order:", order);
-
   // Använder port ~~och endpoint~~ från sidan, precis som GET-anropen
   fetch(`http://localhost:${port.value}/orders`, {
     method: "POST",
@@ -109,7 +107,6 @@ submitBtn.addEventListener("click", (event) => {
       return res.json();
     })
     .then((data) => {
-      console.log("Success:", data);
       alert(`Order created successfully (order_id: ${data.order_id})`);
     })
     .catch((err) => {
