@@ -30,9 +30,6 @@ curl -X POST http://localhost:3007/orders \
 exports.createOrder = async (req, res) => {
   let connection;
   try {
-    connection = await pool.getConnection();
-    await connection.beginTransaction();
-
     // kopiera request body till manipulerbar variabel för validering och lagring innan ordern skapas
     const orderBody = req.body;
 
@@ -41,6 +38,9 @@ exports.createOrder = async (req, res) => {
     if (!orderBody.order_items.length) {
       return res.status(400).json({ error: "No items with quantity > 0" });
     }
+
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
 
     // initialisera saknade värden i orderBody och tilldela nya
     orderBody.total_price = 0;
@@ -61,7 +61,7 @@ exports.createOrder = async (req, res) => {
       [orderBody.customer_id, orderBody.shipping_address_id],
     );
 
-    if (customerData[0].length === 0) {
+    if (customerData.length === 0) {
       throw new Error("Invalid customer_id or shipping_address_id. ");
     }
 

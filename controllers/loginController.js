@@ -6,10 +6,8 @@ exports.login = async (req, res) => {
 
   if (!email) return res.status(400).json({ error: "Email is required" });
 
-  let connection;
   try {
-    connection = await pool.getConnection();
-    const [rows] = await connection.query(
+    const [rows] = await pool.query(
       "SELECT customer_id, first_name, last_name, email FROM customers WHERE email = ?",
       [email]
     );
@@ -19,7 +17,5 @@ exports.login = async (req, res) => {
     res.status(200).json(rows[0]);
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
-  } finally {
-    if (connection) connection.release();
   }
 };
